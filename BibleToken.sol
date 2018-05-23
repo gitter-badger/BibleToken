@@ -1268,6 +1268,94 @@ library AddressUtils {
 }
 
 
+/**
+ * @title Ownable
+ * @dev The Ownable contract has an owner address, and provides basic authorization control
+ * functions, this simplifies the implementation of "user permissions".
+ */
+contract Ownable {
+  address public owner;
+
+
+  /**
+   * @dev The Ownable constructor sets the original `owner` of the contract to the sender
+   * account.
+   */
+  function Ownable() {
+    owner = msg.sender;
+  }
+
+
+  /**
+   * @dev Throws if called by any account other than the owner.
+   */
+  modifier onlyOwner() {
+    require(msg.sender == owner);
+    _;
+  }
+
+
+  /**
+   * @dev Allows the current owner to transfer control of the contract to a newOwner.
+   * @param newOwner The address to transfer ownership to.
+   */
+  function transferOwnership(address newOwner) onlyOwner {
+    if (newOwner != address(0)) {
+      owner = newOwner;
+    }
+  }
+
+}
+
+
+
+/**
+ * @title Pausable
+ * @dev Base contract which allows children to implement an emergency stop mechanism.
+ */
+contract Pausable is Ownable {
+  event Pause();
+  event Unpause();
+
+  bool public paused = false;
+
+
+  /**
+   * @dev modifier to allow actions only when the contract IS paused
+   */
+  modifier whenNotPaused() {
+    require(!paused);
+    _;
+  }
+
+  /**
+   * @dev modifier to allow actions only when the contract IS NOT paused
+   */
+  modifier whenPaused {
+    require(paused);
+    _;
+  }
+
+  /**
+   * @dev called by the owner to pause, triggers stopped state
+   */
+  function pause() onlyOwner whenNotPaused returns (bool) {
+    paused = true;
+    Pause();
+    return true;
+  }
+
+  /**
+   * @dev called by the owner to unpause, returns to normal state
+   */
+  function unpause() onlyOwner whenPaused returns (bool) {
+    paused = false;
+    Unpause();
+    return true;
+  }
+}
+
+
 /// @title ERC721Standard Non-Fungible Token Standard
 /// @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
 contract ERC721Standard {
@@ -1588,38 +1676,32 @@ contract ERC721Token is ERC721 {
 
 }
 
-library StringAsKey {
-  function convert(string key) returns (bytes32 ret) {
-    if (bytes(key).length > 32) {
-      throw;
-    }
-
-    assembly {
-      ret := mload(add(key, 32))
-    }
-  }
-}
-
-
-contract BibleToken is usingOraclize {
-    
-    
-    
-}
-
 
 contract BibleToken is ERC721Token, usingOraclize {
     
     struct Token {
-        string  book;
-        uint256 chapter;
-        string  text;
-        uint256 verse;
+        string book;
+        string chapter;
+        string verse;
+        string text;
     }
     
+    Token[] tokens;
+    
+    string public currentBook;
+    string public currentChapter;
+    string public currentVerse;
+    
+    uint8  constant internal urlBaseSize = 117;
+    string constant internal urlBaseI    = "xml(QmRov85t1Hdv8uQfPfdrvDtAWP4oQBzteWxLZLRd98zdyM).xpath(/Bible/Book[@name='";
+    string constant internal urlBaseII   = "']/Chapter[@id='";
+    string constant internal urlBaseIII  = "']/Verse[@id='";
+    string constant internal urlBaseIV   = "']/text())";
+    string public currentURL;
+    
     struct Book {
-        string name;
-        uint8[] chapterVerses;
+    	string name;
+    	uint8[] chapterVerses;
     }
     
     string[] internal booksOfTheBible = [
@@ -1649,55 +1731,67 @@ contract BibleToken is ERC721Token, usingOraclize {
 
     Book[] books;
     
-    string public currentBook;
-    uint8  public currentChapter;
-    uint8  public currentVerse;
-    
     mapping (string => uint8) bookChaptersCount;
     mapping (uint8  => uint8) chapterVersesCount;
-    
-    string internal ret;
-    
-    string public firstQuery;
     
     event OraclizeQuery(string description);
     event RetrievedVerse(string verse);
     
-    function BT() public {
-        currentBook = "Genesis";
-        currentChapter = 1;
-        currentVerse = 1;
-        
-        firstQuery = constructQuery(currentBook, currentChapter, currentVerse);
+    function I() public {
+        currentBook    = "Genesis";
+        currentChapter = "1";
+        currentVerse   = "1";
+        currentURL = constructURL();
     }
     
     function __callback(bytes32 myid, string result) public {
         if (msg.sender != oraclize_cbAddress()) revert();
-        ret = result;
+        //ret = result;
         
         RetrievedVerse(result);
     }
     
-    function constructQuery(string _book, uint8 _chapter, uint8 _verse) internal returns (string) {
-        string memory query = "xml(QmRov85t1Hdv8uQfPfdrvDtAWP4oQBzteWxLZLRd98zdyM).xpath(/Bible/Book[@name='";
-        string memory chapter = uint2str(_chapter);
-        string memory verse = uint2str(_verse);
+    function constructURL() internal view returns (string) {
+        bytes memory burl_1 = bytes(urlBaseI);
+        bytes memory burl_2 = bytes(currentBook);
+        bytes memory burl_3 = bytes(urlBaseII);
+        bytes memory burl_4 = bytes(currentChapter);
+        bytes memory burl_5 = bytes(urlBaseIII);
+        bytes memory burl_6 = bytes(currentVerse);
+        bytes memory burl_7 = bytes(urlBaseIV);
+            
+        // TODO possibly split the count into another function
+        // TODO possibly split the constant size of the url in another function
+        //      just in case the constant url need to change in the future
+        string memory url = new string(urlBaseSize + burl_2.length + burl_4.length + burl_6.length);
+        bytes memory burl = bytes(url);
+            
+        uint i = 0;
+        uint k = 0;
+        for (i = 0; i < burl_1.length; i++) burl[k++] = burl_1[i];
+        for (i = 0; i < burl_2.length; i++) burl[k++] = burl_2[i];
+        for (i = 0; i < burl_3.length; i++) burl[k++] = burl_3[i];
+        for (i = 0; i < burl_4.length; i++) burl[k++] = burl_4[i];
+        for (i = 0; i < burl_5.length; i++) burl[k++] = burl_5[i];
+        for (i = 0; i < burl_6.length; i++) burl[k++] = burl_6[i];
+        for (i = 0; i < burl_7.length; i++) burl[k++] = burl_7[i];
         
-        string memory test1 = strConcat(query, _book, "']/Chapter[@id='", chapter, "']/Verse[@id='");
-        string memory test2 = strConcat(query, verse, "']/text())");
-        string memory test3 = strConcat(test1, test2);
-        
-        return test3;
+        url = string(burl);
+        return url;
     }
     
     function retrieveVerse() payable public {
         if (oraclize_getPrice("IPFS") > this.balance) {
             OraclizeQuery("Insufficient funds to send query");
         } else {
-            oraclize_query("IPFS", "xml(QmRov85t1Hdv8uQfPfdrvDtAWP4oQBzteWxLZLRd98zdyM).xpath(/Bible/Book[@name='Genesis']/Chapter[@id='1']/Verse[@id='1']/text())");
+            oraclize_query("IPFS", currentURL);
             
             OraclizeQuery("Query sent; awaiting response...");
         }
+    }
+    
+    function mint()payable public {
+        // Retrieve a verse
     }
     
 }
