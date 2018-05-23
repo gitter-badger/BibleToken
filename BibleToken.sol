@@ -1686,53 +1686,27 @@ contract BibleToken is ERC721Token, usingOraclize {
         string text;
     }
     
-    Token[] tokens;
-    
-    string public currentBook;
-    string public currentChapter;
-    string public currentVerse;
+    struct Book {
+        // The name of the book
+    	string name;
+    	uint8  totalChapters;
+    }
     
     uint8  constant internal urlBaseSize = 117;
     string constant internal urlBaseI    = "xml(QmRov85t1Hdv8uQfPfdrvDtAWP4oQBzteWxLZLRd98zdyM).xpath(/Bible/Book[@name='";
     string constant internal urlBaseII   = "']/Chapter[@id='";
     string constant internal urlBaseIII  = "']/Verse[@id='";
     string constant internal urlBaseIV   = "']/text())";
+    
+    // The array to hold all of the tokens (verses of The Bible)
+    Token[] tokens;
+    // The object to hold the data of the current book we're on
+    Book book;
+    
+    string public currentBook;
+    string public currentChapter;
+    string public currentVerse;
     string public currentURL;
-    
-    struct Book {
-    	string name;
-    	uint8[] chapterVerses;
-    }
-    
-    string[] internal booksOfTheBible = [
-        "Gensis",           "Exodus",           "Leviticus",
-        "Numbers",          "Deuteronomy",      "Joshua",
-        "Judges",           "Ruth",             "1 Samuel",
-        "2 Samuel",         "1 Kings",          "2 Kings",
-        "1 Chronicles",     "2 Chronicles",     "Ezra",
-        "Nehemiah",         "Esther",           "Job",
-        "Psalms",           "Proverbs",         "Ecclesiastes",
-        "Song of Solomon",  "Isaiah",           "Jeremiah",
-        "Lamentation",      "Ezekiel",          "Daniel",
-        "Hosea",            "Joel",             "Amos",
-        "Obadiah",          "Jonah",            "Micah",
-        "Nahum",            "Habakkuk",         "Zephaniah",
-        "Haggai",           "Zechariah",        "Malachi",
-        "Matthew",          "Mark",             "Luke",
-        "John",             "Acts",             "Romans",
-        "1 Corinthians",    "2 Corinthians",    "Galatians",
-        "Ephesians",        "Philippians",      "Colossians",
-        "1 Thessalonians",  "2 Thessalonians",  "1 Timothy",
-        "2 Timothy",        "Titus",            "Philemon",
-        "Hebrews",          "James",            "1 Peter",
-        "2 Peter",          "1 John",           "2 John",
-        "3 John",           "Jude",             "Revelation"
-    ];
-
-    Book[] books;
-    
-    mapping (string => uint8) bookChaptersCount;
-    mapping (uint8  => uint8) chapterVersesCount;
     
     event OraclizeQuery(string description);
     event RetrievedVerse(string verse);
@@ -1791,7 +1765,40 @@ contract BibleToken is ERC721Token, usingOraclize {
     }
     
     function mint()payable public {
-        // Retrieve a verse
+        // Retrieve a verse from the current url
+        
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
