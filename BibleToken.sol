@@ -1679,45 +1679,97 @@ contract ERC721Token is ERC721 {
 
 contract BibleToken is ERC721Token, usingOraclize {
     
+    // @dev explanation here
     struct Token {
-        string book;
-        string chapter;
-        string verse;
-        string text;
+        string bookName;
+        uint8  chapterNumber;
+        uint8  verseNumber;
+        string verseText;
     }
     
-    struct Book {
-        // The name of the book
-    	string name;
-    	uint8  totalChapters;
-    }
-    
+    // @dev explanation here
+    uint8  constant internal totalBooks  = 66;
     uint8  constant internal urlBaseSize = 117;
     string constant internal urlBaseI    = "xml(QmRov85t1Hdv8uQfPfdrvDtAWP4oQBzteWxLZLRd98zdyM).xpath(/Bible/Book[@name='";
     string constant internal urlBaseII   = "']/Chapter[@id='";
     string constant internal urlBaseIII  = "']/Verse[@id='";
     string constant internal urlBaseIV   = "']/text())";
     
+    // @dev explanation here
     // The array to hold all of the tokens (verses of The Bible)
     Token[] tokens;
-    // The object to hold the data of the current book we're on
-    Book book;
+
+    // @dev explanation here
+    string  public currentBookName;
+    uint8[] public currentChapterVerses;
+    uint8   public currentChapterNumber;
+    uint8   public currentVerseNumber;
     
-    string public currentBook;
-    string public currentChapter;
-    string public currentVerse;
-    string public currentURL;
+    // @dev explanation here
+    string  public currentURL;
     
+    // @dev explanation here
     event OraclizeQuery(string description);
     event RetrievedVerse(string verse);
     
-    function I() public {
-        currentBook    = "Genesis";
-        currentChapter = "1";
-        currentVerse   = "1";
-        currentURL = constructURL();
+    // @dev explanation here
+    function BibleToken() public {
+        currentBookName      = "Genesis";
+        currentChapterVerses = [
+            31, 25, 24, 26, 32, 22, 24, 22, 29, 32,
+            32, 20, 18, 24, 21, 16, 27, 33, 38, 18,
+            34, 24, 20, 67, 34, 35, 46, 22, 35, 43,
+            55, 32, 20, 31, 29, 43, 36, 30, 23, 23,
+            57, 38, 34, 34, 28, 34, 31, 22, 33, 26
+        ];
+        currentChapterNumber = 1;
+        currentVerseNumber   = 1;
+        currentURL           = constructURL();
     }
     
+    // @dev explanation here
+    function mint()payable public returns (uint256) {
+        // @dev explanation here
+        if(!(currentVerseNumber < currentChapterVerses[currentChapterNumber])) {
+            currentVerseNumber = 0;
+            ++currentChapterNumber;
+        }
+        
+        // @dev explanation here
+        if(!(currentChapterNumber < currentChapterVerses.length)) {
+            currentChapterNumber = 0;
+            myOraclizeUpdateBook();
+        }
+        
+        // @dev explanation here
+        string memory text = myOraclizeGetVerse();
+        
+        // @dev explanation here
+        Token memory token = Token({
+            bookName:      currentBookName,
+            chapterNumber: currentChapterNumber,
+            verseNumber:   currentVerseNumber,
+            verseText:     text
+        });
+        
+        // @dev explanation here
+        uint256 tokenId = tokens.push(token) - 1;
+        ++currentVerseNumber;
+        return tokenId;
+    }
+    
+    // @dev explanation here
+    function retrieveVerse() payable public {
+        if (oraclize_getPrice("IPFS") > this.balance) {
+            OraclizeQuery("Insufficient funds to send query");
+        } else {
+            oraclize_query("IPFS", currentURL);
+            
+            OraclizeQuery("Query sent; awaiting response...");
+        }
+    }
+    
+    // @dev explanation here
     function __callback(bytes32 myid, string result) public {
         if (msg.sender != oraclize_cbAddress()) revert();
         //ret = result;
@@ -1725,13 +1777,14 @@ contract BibleToken is ERC721Token, usingOraclize {
         RetrievedVerse(result);
     }
     
+    // @dev explanation here
     function constructURL() internal view returns (string) {
         bytes memory burl_1 = bytes(urlBaseI);
-        bytes memory burl_2 = bytes(currentBook);
+        bytes memory burl_2 = bytes(currentBookName);
         bytes memory burl_3 = bytes(urlBaseII);
-        bytes memory burl_4 = bytes(currentChapter);
+        bytes memory burl_4 = bytes(uint2str(currentChapterNumber));
         bytes memory burl_5 = bytes(urlBaseIII);
-        bytes memory burl_6 = bytes(currentVerse);
+        bytes memory burl_6 = bytes(uint2str(currentVerseNumber));
         bytes memory burl_7 = bytes(urlBaseIV);
             
         // TODO possibly split the count into another function
@@ -1754,51 +1807,19 @@ contract BibleToken is ERC721Token, usingOraclize {
         return url;
     }
     
-    function retrieveVerse() payable public {
-        if (oraclize_getPrice("IPFS") > this.balance) {
-            OraclizeQuery("Insufficient funds to send query");
-        } else {
-            oraclize_query("IPFS", currentURL);
-            
-            OraclizeQuery("Query sent; awaiting response...");
-        }
-    }
-    
-    function mint()payable public {
-        // Retrieve a verse from the current url
+    // @dev explanation here
+    function myOraclizeUpdateBook() internal {
         
     }
     
+    // @dev explanation here
+    function myOraclizeGetBook() internal {
+        
+    }
+    
+    // @dev explanation here
+    function myOraclizeGetVerse() internal returns (string) {
+        return "ok";
+    }
+    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
