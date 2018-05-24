@@ -1742,7 +1742,7 @@ contract BibleToken is ERC721Token, usingOraclize {
         }
         
         // @dev explanation here
-        string memory text = myOraclizeGetVerse();
+        string memory text = "ok" /* This is the actual function to be implemented myOraclizeGetVerse()*/;
         
         // @dev explanation here
         Token memory token = Token({
@@ -1759,14 +1759,21 @@ contract BibleToken is ERC721Token, usingOraclize {
     }
     
     // @dev explanation here
-    function retrieveVerse() payable public {
-        if (oraclize_getPrice("IPFS") > this.balance) {
-            OraclizeQuery("Insufficient funds to send query");
-        } else {
-            oraclize_query("IPFS", currentURL);
-            
-            OraclizeQuery("Query sent; awaiting response...");
+    function retrieveVerse(string _book, uint8 _chapter, uint8 _verse) view public returns (string) {
+        // The maximum number of chapters that can be a book; Psalms has the most, at 150
+        require((_chapter > 0) && (_chapter <= 150));
+        // The maximum number of verses that can be in a chapter; Psalms 119 has the most at 176
+        require((_verse > 0) && (_verse <= 176));
+        
+        for(uint256 i = 0; i < tokens.length; ++i) {
+            // Using keccak256 because strings of type storage ref and string memory cannot compare
+            if(keccak256(tokens[i].bookName) == keccak256(_book) &&
+               tokens[i].chapterNumber == _chapter &&
+               tokens[i].verseNumber == _verse)
+               return tokens[i].verseText;
         }
+        // TODO find a better string to return than this one
+        return "Verse not minted yet, or invalid Book Name.";
     }
     
     // @dev explanation here
@@ -1818,8 +1825,18 @@ contract BibleToken is ERC721Token, usingOraclize {
     }
     
     // @dev explanation here
-    function myOraclizeGetVerse() internal returns (string) {
-        return "ok";
+    function myOraclizeGetVerse() payable public {
+        // Using this for debugging right now
+        //return "ok";
+        
+        // The real Oraclize code
+        //if (oraclize_getPrice("IPFS") > this.balance) {
+        //    OraclizeQuery("Insufficient funds to send query");
+        //} else {
+        //    oraclize_query("IPFS", currentURL);
+        //    
+        //    OraclizeQuery("Query sent; awaiting response...");
+        //}
     }
     
 }
