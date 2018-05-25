@@ -41,7 +41,7 @@ Once the token is minted, you (and anyone else in the world) will be able to vie
 
 How Can I Help?
 ---------------
-Any help auditing the code for security holes or organizing the logic of the code would be greatly appreciated.
+Any help auditing the code for security holes or organizing the logic of the code as well as a number of many other things would be greatly appreciated.
 
 This is going to have to be a community effort.
 
