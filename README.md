@@ -30,7 +30,7 @@ This will add an incentive for anyone who wants to help get the Bible on the blo
 
 Each time you mint a token, the corresponding verse will get written to the blockchain,
 and you will receive a token signifying that unique verse to the address you minted it from.
-The data for each verse comes from an XML file stored on the IPFS.
+The data for each verse comes from an immutable XML file stored on the IPFS that will retrieved using the Oraclize API.
 
 The tokens will be getting minted incrementally, starting from Genesis 1:1 and ending in Revelation 22:21.
 This is to keep people from greedily minting any verse they want for themselves.
