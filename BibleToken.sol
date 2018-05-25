@@ -1687,10 +1687,34 @@ contract BibleToken is ERC721Token, usingOraclize {
         string verseText;
     }
     
+    string[] public booksOfTheBible = [
+        "Gensis",           "Exodus",           "Leviticus",
+        "Numbers",          "Deuteronomy",      "Joshua",
+        "Judges",           "Ruth",             "1 Samuel",
+        "2 Samuel",         "1 Kings",          "2 Kings",
+        "1 Chronicles",     "2 Chronicles",     "Ezra",
+        "Nehemiah",         "Esther",           "Job",
+        "Psalms",           "Proverbs",         "Ecclesiastes",
+        "Song of Solomon",  "Isaiah",           "Jeremiah",
+        "Lamentation",      "Ezekiel",          "Daniel",
+        "Hosea",            "Joel",             "Amos",
+        "Obadiah",          "Jonah",            "Micah",
+        "Nahum",            "Habakkuk",         "Zephaniah",
+        "Haggai",           "Zechariah",        "Malachi",
+        "Matthew",          "Mark",             "Luke",
+        "John",             "Acts",             "Romans",
+        "1 Corinthians",    "2 Corinthians",    "Galatians",
+        "Ephesians",        "Philippians",      "Colossians",
+        "1 Thessalonians",  "2 Thessalonians",  "1 Timothy",
+        "2 Timothy",        "Titus",            "Philemon",
+        "Hebrews",          "James",            "1 Peter",
+        "2 Peter",          "1 John",           "2 John",
+        "3 John",           "Jude",             "Revelation"
+    ];
+    
     // @dev explanation here
-    uint8  constant internal totalBooks  = 66;
     uint8  constant internal urlBaseSize = 117;
-    string constant internal urlBaseI    = "xml(QmRov85t1Hdv8uQfPfdrvDtAWP4oQBzteWxLZLRd98zdyM).xpath(/Bible/Book[@name='";
+    string constant internal urlBaseI    = "xml(QmZSjsND17sEbSPzyMub1czPbr1rXttTiCG6pN1znFz7wa).xpath(/Bible/Book[@name='";
     string constant internal urlBaseII   = "']/Chapter[@id='";
     string constant internal urlBaseIII  = "']/Verse[@id='";
     string constant internal urlBaseIV   = "']/text())";
@@ -1709,12 +1733,23 @@ contract BibleToken is ERC721Token, usingOraclize {
     string  public currentURL;
     
     // @dev explanation here
+    uint8   public booksCompleted;
+    
+    // @dev explanation here
     event OraclizeQuery(string description);
     event RetrievedVerse(string verse);
     
     // @dev explanation here
+    modifier booksIncomplete () {
+        require(booksCompleted < booksOfTheBible.length);
+        _;
+    }
+    
+    // @dev explanation here
     function BibleToken() public {
-        currentBookName      = "Genesis";
+        // @dev explanation here
+        booksCompleted       = 0;
+        currentBookName      = booksOfTheBible[booksCompleted];
         currentChapterVerses = [
             31, 25, 24, 26, 32, 22, 24, 22, 29, 32,
             32, 20, 18, 24, 21, 16, 27, 33, 38, 18,
@@ -1722,22 +1757,26 @@ contract BibleToken is ERC721Token, usingOraclize {
             55, 32, 20, 31, 29, 43, 36, 30, 23, 23,
             57, 38, 34, 34, 28, 34, 31, 22, 33, 26
         ];
+        
+        // @dev explanation here
         currentChapterNumber = 1;
         currentVerseNumber   = 1;
+        
+        // @dev explanation here
         currentURL           = constructURL();
     }
     
     // @dev explanation here
-    function mint()payable public returns (uint256) {
+    function mint()payable public booksIncomplete returns (uint256) {
         // @dev explanation here
         if(!(currentVerseNumber < currentChapterVerses[currentChapterNumber])) {
-            currentVerseNumber = 0;
+            currentVerseNumber = 1;
             ++currentChapterNumber;
         }
         
         // @dev explanation here
         if(!(currentChapterNumber < currentChapterVerses.length)) {
-            currentChapterNumber = 0;
+            currentChapterNumber = 1;
             myOraclizeUpdateBook();
         }
         
@@ -1814,13 +1853,30 @@ contract BibleToken is ERC721Token, usingOraclize {
         return url;
     }
     
-    // @dev explanation here
+    // @dev the purpose of this function is that when the program state recognizes that it has
+    //  run out of chapters to process (and has not come to the end of the Bible) it will call
+    //  this function to retrieve the data for the next book.
+    //  This data will include: the name of the book, and the array of chapter verses.
     function myOraclizeUpdateBook() internal {
+        ++booksCompleted;
+        currentBookName = booksOfTheBible[booksCompleted];
         
+        myOraclizeGetChapterVerses(booksOfTheBible[booksCompleted]);
+        // Parse the response in the __callback
+        
+        currentChapterVerses = [
+            31, 25, 24, 26, 32, 22, 24, 22, 29, 32,
+            32, 20, 18, 24, 21, 16, 27, 33, 38, 18,
+            34, 24, 20, 67, 34, 35, 46, 22, 35, 43,
+            55, 32, 20, 31, 29, 43, 36, 30, 23, 23,
+            57, 38, 34, 34, 28, 34, 31, 22, 33, 26
+        ];
+        
+        currentURL = constructURL();
     }
     
     // @dev explanation here
-    function myOraclizeGetBook() internal {
+    function myOraclizeGetChapterVerses(string _book) internal returns (string) {
         
     }
     
@@ -1840,3 +1896,15 @@ contract BibleToken is ERC721Token, usingOraclize {
     }
     
 }
+
+// Verse Text
+// xml(QmZSjsND17sEbSPzyMub1czPbr1rXttTiCG6pN1znFz7wa).xpath(/Bible/Book[@name='Genesis']/Chapter[@id='1']/Verse[@id='1']/text())
+// 
+// Number of Chapters
+// xml(QmZSjsND17sEbSPzyMub1czPbr1rXttTiCG6pN1znFz7wa).xpath(/Bible/Book[@name='Genesis']/numberOfChapters/text())
+//
+// Number of Chapter Verses
+// xml(QmZSjsND17sEbSPzyMub1czPbr1rXttTiCG6pN1znFz7wa).xpath(/Bible/Book[@name='Genesis']/Chapter/numberOfVerses/text())
+//
+// The above two combined into one (the first element in the array is the Number of Chapters then follows the Number of Chapter Verses)
+// xml(QmZSjsND17sEbSPzyMub1czPbr1rXttTiCG6pN1znFz7wa).xpath(/Bible/Book[@name='Genesis']/numberOfChapters/text() | /Bible/Book[@name='Genesis']/Chapter/numberOfVerses/text())
