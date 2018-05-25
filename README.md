@@ -33,10 +33,10 @@ and you will receive a token signifying that unique verse to the address you min
 The data for each verse comes from an XML file stored on the IPFS.
 
 The tokens will be getting minted incrementally, starting from Genesis 1:1 and ending in Revelation 22:21.
-This is to keep people from greedily taking minting any verse they want for themselves.
+This is to keep people from greedily minting any verse they want for themselves.
 This way, it will also build anticipation for people watching to see when one of their favorite verses will get minted.
 
-Once the token is minted, you (and anyone else in the world) will be able to view that verse with no gas cost.
+Once the token is minted, you (and anyone else in the world) will be able to view that verse with for gas cost.
 
 How Can I Help?
 ---------------
