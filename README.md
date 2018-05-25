@@ -13,7 +13,7 @@ Where it will remain immutable and accessible to anyone in the world!
 Isn't Storing Anything on The Blockchain Extremely Expensive?
 -------------------------------------------------------------
 Valid question.
-To simply hard-code the Bible onto the Ethereum blockchain would cost millions of dollars.
+To simply hard-code the Bible onto the Ethereum blockchain would cost quite a bit.
 Just storing one 256 bit word costs 20,000 gas.
 And with the current cost of gas, that would be $0.097 per 256 bit word.
 
