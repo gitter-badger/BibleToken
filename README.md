@@ -20,8 +20,7 @@ Storing it would cost: 4,332,914 * 0.097 = $420,292.66
 
 So How Are We Going To Store The Bible?
 ---------------------------------------
-Using the ERC721 token standard (https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md) we can mint
-the entire Bible onto the blockchain, and while doing so a total of 31,102 (the number of verses in The
+Using the ERC721 token standard (https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md) we can incrementally mint each verse of the entire Bible onto the blockchain, and while doing so a total of 31,102 (the number of verses in The
 King James Bible) unique tokens will be produced for anyone to collect as digital collectables and to freely trade if you so choose.
 
 The ERC721 token standard defines a set of rules for non-fungible (unique) tokens.
