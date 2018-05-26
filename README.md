@@ -1,21 +1,19 @@
 BibleToken - Getting The Bible on The Blockchain
 ================================================
 
-TODO just jot down ideas for this README file. Thoroughly edit it later with correct punctuation and grammar.
-
-website-goes-here
+< website-goes-here >
 
 What is BibleToken?
 -------------------
-The BibleToken project simply aims to get The King James Bible onto the Ethereum blockchain.
-Where it will remain immutable and accessible to anyone in the world!
+The BibleToken project aims to get The King James Bible onto the Ethereum blockchain.
+Which means it will remain immutable and accessible to anyone in the world for as long as the internet exists!
 
 Isn't Storing Anything on The Blockchain Extremely Expensive?
 -------------------------------------------------------------
 Valid question.
 To simply hard-code the Bible onto the Ethereum blockchain would cost quite a bit.
-Just storing one 256 bit word costs 20,000 gas.
-And with the current cost of gas, that would be $0.097 per 256 bit word.
+Just storing one 256 bit word costs 20,000 gas (the unit of currency on which the Ethereum blockchain runs on).
+With the current cost of gas, that would be $0.097 per 256 bit word.
 
 And with the Bible being 4,332,914 bytes in size.
 Storing it would cost: 4,332,914 * 0.097 = $420,292.66
@@ -24,7 +22,7 @@ So How Are We Going To Store The Bible?
 ---------------------------------------
 Using the ERC721 token standard (https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md) we can mint
 the entire Bible onto the blockchain, and while doing so a total of 31,102 (the number of verses in The
-King James Bible) unique tokens will be produced for anyone to collect as digital collectables.
+King James Bible) unique tokens will be produced for anyone to collect as digital collectables and to freely trade if you so choose.
 
 The ERC721 token standard defines a set of rules for non-fungible (unique) tokens.
 This will add an incentive for anyone who wants to help get the Bible on the blockchain.
