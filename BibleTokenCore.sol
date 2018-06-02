@@ -21,7 +21,7 @@ contract BibleTokenCore is BibleTokenMinting {
         currentChapterNumber = 1;
         currentVerseNumber = 1;
         
-        currentURL = _constructVerseTextURL();
+        //currentURL = _constructVerseTextURL();
     }
     
     /**
@@ -67,11 +67,11 @@ contract BibleTokenCore is BibleTokenMinting {
     /**
      * @dev 
      */
-    function _constructVerseTextURL()
-        internal
-        view
-        returns (string)
-    {
-        return super.constructVerseTextURL();
-    }
+    //function _constructVerseTextURL()
+    //    internal
+    //    view
+    //    returns (string)
+    //{
+    //    return super.constructVerseTextURL();
+    //}
 }

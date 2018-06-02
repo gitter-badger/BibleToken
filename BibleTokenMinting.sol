@@ -223,7 +223,7 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
             delete currentChapterVersesNumber;
             delete currentChapterNumber;
             delete currentVerseNumber;
-            delete currentURL;
+            //delete currentURL;
             return;
         }
     }
@@ -319,94 +319,11 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
             "']/text())"
         );
         
-        bytes32 id = oraclize_query("IPFS", currentURL);
+        bytes32 id = oraclize_query("IPFS", url);
         queryToType[id] = QueryType.GET_VERSE;
         queryToSender[id] = msg.sender;
         
         OraclizeQuery("Query sent; awaiting response...");
-    }
-    
-    
-    
-    
-    
-    
-    
-    /**
-    * @dev 
-    */
-    function parseChapterVersesQueryResponse(
-        string _stringArr
-    )
-        internal
-    {
-        // The variable for holding the quote count.
-        // If the quote count is equal to 2, then the temp string gets parsed into an int and pushed to the currentChapterVerses array.
-        uint8 quoteCount = 0;
-        // The variable to hold the number that is to be parsed to an int.
-        string memory digits;
-        
-        bytes memory bytesArr = bytes(_stringArr);
-        byte char;
-        for(uint8 i = 0; i < bytesArr.length; ++i) {
-            char = bytesArr[i];
-            if(char == 0x5d) break;
-            if(char == 0x5b ||  char == 0x2c || char == 0x20) continue;
-            if(char == 0x22) {
-                ++quoteCount;
-                if(quoteCount == 2) {
-                    //currentChapterVerses.push(uint8(parseInt(digits)));
-                    delete digits;
-                    quoteCount = 0;
-                }
-            }
-            string memory temp = bytes8ToString(bytes8(char));
-            digits = strConcat(digits, string(temp));
-        }
-    }
-    
-    /**
-    * @dev 
-    */
-    function bytes8ToString(
-        bytes8 x
-    )
-        public
-        returns (string)
-    {
-        bytes memory bytesString = new bytes(8);
-        uint charCount = 0;
-        for (uint j = 0; j < 8; j++) {
-            byte char = byte(bytes8(uint(x) * 2 ** (8 * j)));
-            if (char != 0) {
-                bytesString[charCount] = char;
-                charCount++;
-            }
-        }
-        bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (j = 0; j < charCount; j++) {
-            bytesStringTrimmed[j] = bytesString[j];
-        }
-            return string(bytesStringTrimmed);
-    }
-    
-    /**
-    * @dev 
-    */
-    function updateURL()
-        internal
-    {
-        if(!(currentVerseNumber < currentChapterVersesNumber)) {
-            currentVerseNumber = 1;
-            ++currentChapterNumber;
-        }
-        
-        if(!(currentChapterNumber < currentNumberOfChapters)) {
-            currentChapterNumber = 1;
-            //myOraclizeUpdateBook();
-        } else {
-            currentURL = constructVerseTextURL();
-        }
     }
     
     /**
@@ -422,7 +339,7 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
         whenNotPaused
         booksIncomplete
     {
-        require(msg.value == 1 ether);
+        require(msg.value == 0.25 ether);
         pause();
         Pause();
         myOraclizeMintVerse();
@@ -466,101 +383,184 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
         super.addNFToken(_to, _tokenIndex);
     }
     
+    
+    
+    
+    
+    
+    
+    /**
+    * @dev 
+    */
+    //function parseChapterVersesQueryResponse(
+    //    string _stringArr
+    //)
+    //    internal
+    //{
+    //    // The variable for holding the quote count.
+    //    // If the quote count is equal to 2, then the temp string gets parsed into an int and pushed to the currentChapterVerses array.
+    //    uint8 quoteCount = 0;
+    //    // The variable to hold the number that is to be parsed to an int.
+    //    string memory digits;
+    //    
+    //    bytes memory bytesArr = bytes(_stringArr);
+    //    byte char;
+    //    for(uint8 i = 0; i < bytesArr.length; ++i) {
+    //        char = bytesArr[i];
+    //        if(char == 0x5d) break;
+    //        if(char == 0x5b ||  char == 0x2c || char == 0x20) continue;
+    //        if(char == 0x22) {
+    //            ++quoteCount;
+    //            if(quoteCount == 2) {
+    //                //currentChapterVerses.push(uint8(parseInt(digits)));
+    //                delete digits;
+    //                quoteCount = 0;
+    //            }
+    //        }
+    //        string memory temp = bytes8ToString(bytes8(char));
+    //        digits = strConcat(digits, string(temp));
+    //    }
+    //}
+    
+    /**
+    * @dev 
+    */
+    //function bytes8ToString(
+    //    bytes8 x
+    //)
+    //    public
+    //    returns (string)
+    //{
+    //    bytes memory bytesString = new bytes(8);
+    //    uint charCount = 0;
+    //    for (uint j = 0; j < 8; j++) {
+    //        byte char = byte(bytes8(uint(x) * 2 ** (8 * j)));
+    //        if (char != 0) {
+    //            bytesString[charCount] = char;
+    //            charCount++;
+    //        }
+    //    }
+    //    bytes memory bytesStringTrimmed = new bytes(charCount);
+    //    for (j = 0; j < charCount; j++) {
+    //        bytesStringTrimmed[j] = bytesString[j];
+    //    }
+    //        return string(bytesStringTrimmed);
+    //}
+    
+    /**
+    * @dev 
+    */
+    //function updateURL()
+    //    internal
+    //{
+    //    if(!(currentVerseNumber < currentChapterVersesNumber)) {
+    //        currentVerseNumber = 1;
+    //        ++currentChapterNumber;
+    //    }
+    //    
+    //    if(!(currentChapterNumber < currentNumberOfChapters)) {
+    //        currentChapterNumber = 1;
+    //        //myOraclizeUpdateBook();
+    //    } else {
+    //        currentURL = constructVerseTextURL();
+    //    }
+    //}
+    
     /**
     * @dev This function constructs the URL in the Oraclize query to retrieve the Bible verse text.
     */
-    function constructVerseTextURL()
-        internal
-        view
-        returns (string)
-    {
-        bytes memory burl_1 = bytes(urlVerseI);
-        bytes memory burl_2 = bytes(currentBookName);
-        bytes memory burl_3 = bytes(urlVerseII);
-        bytes memory burl_4 = bytes(uint2str(currentChapterNumber));
-        bytes memory burl_5 = bytes(urlVerseIII);
-        bytes memory burl_6 = bytes(uint2str(currentVerseNumber));
-        bytes memory burl_7 = bytes(urlVerseIV);
-        
-        string memory url = new string(getLengthVerseTextURL(burl_2, burl_4, burl_6));
-        bytes memory burl = bytes(url);
-            
-        uint i = 0;
-        uint k = 0;
-        for (i = 0; i < burl_1.length; i++) burl[k++] = burl_1[i];
-        for (i = 0; i < burl_2.length; i++) burl[k++] = burl_2[i];
-        for (i = 0; i < burl_3.length; i++) burl[k++] = burl_3[i];
-        for (i = 0; i < burl_4.length; i++) burl[k++] = burl_4[i];
-        for (i = 0; i < burl_5.length; i++) burl[k++] = burl_5[i];
-        for (i = 0; i < burl_6.length; i++) burl[k++] = burl_6[i];
-        for (i = 0; i < burl_7.length; i++) burl[k++] = burl_7[i];
-        
-        url = string(burl);
-        return url;
-    }
+    //function constructVerseTextURL()
+    //    internal
+    //    view
+    //    returns (string)
+    //{
+    //    bytes memory burl_1 = bytes(urlVerseI);
+    //    bytes memory burl_2 = bytes(currentBookName);
+    //    bytes memory burl_3 = bytes(urlVerseII);
+    //    bytes memory burl_4 = bytes(uint2str(currentChapterNumber));
+    //    bytes memory burl_5 = bytes(urlVerseIII);
+    //    bytes memory burl_6 = bytes(uint2str(currentVerseNumber));
+    //    bytes memory burl_7 = bytes(urlVerseIV);
+    //    
+    //    string memory url = new string(getLengthVerseTextURL(burl_2, burl_4, burl_6));
+    //    bytes memory burl = bytes(url);
+    //        
+    //    uint i = 0;
+    //    uint k = 0;
+    //    for (i = 0; i < burl_1.length; i++) burl[k++] = burl_1[i];
+    //    for (i = 0; i < burl_2.length; i++) burl[k++] = burl_2[i];
+    //    for (i = 0; i < burl_3.length; i++) burl[k++] = burl_3[i];
+    //    for (i = 0; i < burl_4.length; i++) burl[k++] = burl_4[i];
+    //    for (i = 0; i < burl_5.length; i++) burl[k++] = burl_5[i];
+    //    for (i = 0; i < burl_6.length; i++) burl[k++] = burl_6[i];
+    //    for (i = 0; i < burl_7.length; i++) burl[k++] = burl_7[i];
+    //    
+    //    url = string(burl);
+    //    return url;
+    //}
     
     /**
     * @dev This function constructs the URL in the Oraclize query to update the data for calculating the next Oraclize query.
     */
-    function constructChapterVersesURL(
-        string _currentBookName
-    )
-        internal
-        view
-        returns (string)
-    {
-        bytes memory burl_1 = bytes(urlChapterVersesI);
-        bytes memory burl_2 = bytes(_currentBookName);
-        bytes memory burl_3 = bytes(urlChapterVersesII);
-        
-        string memory url = new string(getLengthChapterVersesURL(burl_2));
-        bytes memory burl = bytes(url);
-            
-        uint i = 0;
-        uint k = 0;
-        for (i = 0; i < burl_1.length; i++) burl[k++] = burl_1[i];
-        for (i = 0; i < burl_2.length; i++) burl[k++] = burl_2[i];
-        for (i = 0; i < burl_3.length; i++) burl[k++] = burl_3[i];
-        
-        url = string(burl);
-        return url;
-    }
+    //function constructChapterVersesURL(
+    //    string _currentBookName
+    //)
+    //    internal
+    //    view
+    //    returns (string)
+    //{
+    //    bytes memory burl_1 = bytes(urlChapterVersesI);
+    //    bytes memory burl_2 = bytes(_currentBookName);
+    //    bytes memory burl_3 = bytes(urlChapterVersesII);
+    //    
+    //    string memory url = new string(getLengthChapterVersesURL(burl_2));
+    //    bytes memory burl = bytes(url);
+    //        
+    //    uint i = 0;
+    //    uint k = 0;
+    //    for (i = 0; i < burl_1.length; i++) burl[k++] = burl_1[i];
+    //    for (i = 0; i < burl_2.length; i++) burl[k++] = burl_2[i];
+    //    for (i = 0; i < burl_3.length; i++) burl[k++] = burl_3[i];
+    //    
+    //    url = string(burl);
+    //    return url;
+    //}
     
     /**
     * @dev This supplemental function is needed due to current Solidity stack size limitations when adding multiple numbers.
     * This one is unique to it's corresponding constructVerseTextURL function.
     */
-    function getLengthVerseTextURL(
-        bytes _currentBookName,
-        bytes _currentChapterNumber,
-        bytes _currentVerseNumber
-    )
-        internal
-        view
-        returns (uint256)
-    {
-        uint256 length = 0;
-        length += bytes(urlVerseI).length + bytes(urlVerseII).length + bytes(urlVerseII).length + bytes(urlVerseIV).length;
-        length += _currentBookName.length + _currentChapterNumber.length + _currentVerseNumber.length;
-        return length;
-    }
+    //function getLengthVerseTextURL(
+    //    bytes _currentBookName,
+    //    bytes _currentChapterNumber,
+    //    bytes _currentVerseNumber
+    //)
+    //    internal
+    //    view
+    //    returns (uint256)
+    //{
+    //    uint256 length = 0;
+    //    length += bytes(urlVerseI).length + bytes(urlVerseII).length + bytes(urlVerseII).length + bytes(urlVerseIV).length;
+    //    length += _currentBookName.length + _currentChapterNumber.length + _currentVerseNumber.length;
+    //    return length;
+    //}
     
     /**
     * @dev This supplemental function is needed due to current Solidity stack size limitations when adding multiple numbers.
     * This one is unique to it's corresponding constructChapterVersesURL function.
     */
-    function getLengthChapterVersesURL(
-        bytes _currentBookName
-    )
-        internal
-        view
-        returns (uint256)
-    {
-        uint length = 0;
-        length += bytes(urlChapterVersesI).length + bytes(urlChapterVersesII).length;
-        length += _currentBookName.length;
-        return length;
-    }
+    //function getLengthChapterVersesURL(
+    //    bytes _currentBookName
+    //)
+    //    internal
+    //    view
+    //    returns (uint256)
+    //{
+    //    uint length = 0;
+    //    length += bytes(urlChapterVersesI).length + bytes(urlChapterVersesII).length;
+    //    length += _currentBookName.length;
+    //    return length;
+    //}
     
     
     

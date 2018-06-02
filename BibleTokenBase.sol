@@ -87,5 +87,5 @@ contract BibleTokenBase {
     uint8  public currentChapterNumber;
     uint8  public currentVerseNumber;
     
-    string public currentURL;
+    //string public currentURL;
 }
