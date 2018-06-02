@@ -14,18 +14,14 @@ contract BibleTokenCore is BibleTokenMinting {
         public
     {
         booksCompleted = 0;
-        currentBookName = booksOfTheBible[booksCompleted];
-        currentChapterVerses = [
-            31, 25, 24, 26, 32, 22, 24, 22, 29, 32,
-            32, 20, 18, 24, 21, 16, 27, 33, 38, 18,
-            34, 24, 20, 67, 34, 35, 46, 22, 35, 43,
-            55, 32, 20, 31, 29, 43, 36, 30, 23, 23,
-            57, 38, 34, 34, 28, 34, 31, 22, 33, 26
-        ];
         
+        currentBookName = "Genesis";
+        currentNumberOfChapters = 3;
+        currentChapterVersesNumber = 1;
         currentChapterNumber = 1;
         currentVerseNumber = 1;
-        currentURL = constructVerseTextURL();
+        
+        currentURL = _constructVerseTextURL();
     }
     
     /**
@@ -59,9 +55,23 @@ contract BibleTokenCore is BibleTokenMinting {
     /**
      * @dev 
      */
-    function withdrawBalance() external onlyOwner {
+    function withdrawBalance()
+        external
+        onlyOwner
+    {
         uint256 balance = this.balance;
         require(balance > 0);
         owner.send(balance);
+    }
+    
+    /**
+     * @dev 
+     */
+    function _constructVerseTextURL()
+        internal
+        view
+        returns (string)
+    {
+        return super.constructVerseTextURL();
     }
 }

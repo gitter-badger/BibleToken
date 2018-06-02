@@ -7,6 +7,7 @@ pragma solidity ^0.4.20;
  */
 contract Ownable {
     address public owner;
+    address public thisContract;
 
     /**
     * @dev An event which is triggered when the owner is changed.
@@ -25,6 +26,7 @@ contract Ownable {
         public
     {
         owner = msg.sender;
+        thisContract = address(this);
     }
 
     /**
@@ -32,6 +34,14 @@ contract Ownable {
     */
     modifier onlyOwner() {
         require(msg.sender == owner);
+        _;
+    }
+    
+    /**
+    * @dev Throws if called by any account other than the owner or the contract.
+    */
+    modifier onlyOwnerOrContract() {
+        require(msg.sender == owner || msg.sender == thisContract);
         _;
     }
 

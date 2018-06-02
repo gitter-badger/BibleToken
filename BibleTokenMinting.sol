@@ -3,7 +3,27 @@ pragma solidity ^0.4.20;
 import "./BibleTokenEnumerable.sol";
 import "./Oraclize.sol";
 
+// I'm probably just gonna have to get the data chapter by chapter; including the books.
+// So the updating will go:
+//
+// UPDATE booksCompleted = 0; currentBookName; numberOfChapters; currentChapterVersesNumber; currentChapterNumber = 1; currentVerseNumber = 1;
+// if currentVerseNumber exceeds currentChapterVersesNumber AND currentChapterNumber != numberOfChapters
+// UPDATE currentChapterVersesNumber; currentChapterNumber++; currentVerseNumber = 1;
+// else if booksCompleted + 1 == 66
+// UPDATE booksCompletedSwitch = true; return;
+// UPDATE currentBookName; numberOfChapters; currentChapterVersesNumber; currentChapterNumber = 1; currentVerseNumber = 1;
+
 contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
+    
+    /**
+    * @dev 
+    */
+    enum QueryType {GET_VERSE, GET_CHAPTER_VERSES, GET_BOOK_NAME, GET_NUMBER_OF_CHAPTERS}
+    
+    /**
+    * @dev 
+    */
+    mapping (bytes32 => QueryType) queryToType;
     
     /**
     * @dev The VerseMinted event is fired when a new BibleToken is minted.
@@ -28,7 +48,7 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     * If it has, then minting a verse is no longer possible.
     */
     modifier booksIncomplete() {
-        require(booksCompleted < booksOfTheBible.length);
+        require(booksCompleted < totalBooks);
         _;
     }
     
@@ -37,7 +57,7 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     * Thus this mappng is used to keep track of the query Ids and their associated addresses (msg.sender).
     * The Id will get written to this mapping on a successfull query. And will then get deleted upon completion of the minting process.
     */
-    mapping (bytes32 => address) queryIds;
+    mapping (bytes32 => address) queryToSender;
     
     /**
     * @dev This is where all the minting action takes place. Since a BibleToken cannot be minted
@@ -46,41 +66,347 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     * before they can access their BibleToken; which should take at most a couple minutes.
     */
     function __callback(
-        bytes32 myid,
-        string result
+        bytes32 _myid,
+        string _result
     )
         public
     {
         require(msg.sender == oraclize_cbAddress());
         
-        if(queryIds[myid] != address(0))
-        {
-            Token memory token = Token({
-                bookName: currentBookName,
-                chapterNumber: currentChapterNumber,
-                verseNumber: currentVerseNumber,
-                verseText: result
-            });
-            
-            //assert(token.verseText.length != 0);
-            
-            uint256 tokenIndex = tokens.push(token) - 1;
-            _mint(queryIds[myid], tokenIndex);
-            delete queryIds[myid];
-            ++currentVerseNumber;
+        if(queryToType[_myid] == QueryType.GET_VERSE) {
+            _mintBibleToken(_myid, _result);
+            unpause();
+            Unpause();
+        } else if(queryToType[_myid] == QueryType.GET_CHAPTER_VERSES) {
+            _updateChapterVerses(_myid, _result);
+            unpause();
+            Unpause();
+        } else if(queryToType[_myid] == QueryType.GET_BOOK_NAME) {
+            _updateBookName(_myid, _result);
+            unpause();
+            Unpause();
+        } else if(queryToType[_myid] == QueryType.GET_NUMBER_OF_CHAPTERS) {
+            _updateNumberOfChapters(_myid, _result);
+            unpause();
+            Unpause();
+        } else {
+            revert(); // ?
         }
+    }
+    
+    /**
+    * @dev 
+    */
+    function _mintBibleToken(
+        bytes32 _myid,
+        string _verseText
+    )
+        internal
+    {
+        Token memory token = Token({
+            bookName: currentBookName,
+            chapterNumber: currentChapterNumber,
+            verseNumber: currentVerseNumber,
+            verseText: _verseText
+        });
         
-        if(!(currentVerseNumber < currentChapterVerses[currentChapterNumber])) {
+        assert(bytes(token.verseText).length != 0);
+        
+        uint256 tokenIndex = tokens.push(token) - 1;
+        delete queryToType[_myid];
+        delete queryToSender[_myid];
+        _mint(queryToSender[_myid], tokenIndex);
+        
+        update();
+    }
+    
+    /**
+    * @dev 
+    */
+    function _updateChapterVerses(
+        bytes32 _myid,
+        string _chapterVerses
+    )
+        internal
+    {
+        currentChapterVersesNumber = uint8(parseInt(_chapterVerses));
+        delete queryToType[_myid];
+        return;
+    }
+    
+    /**
+    * @dev 
+    */
+    function _updateBookName(
+        bytes32 _myid,
+        string _bookName
+    )
+        internal
+    {
+        currentBookName = _bookName;
+        delete queryToType[_myid];
+        return;
+    }
+    
+    /**
+    * @dev 
+    */
+    function _updateNumberOfChapters(
+        bytes32 _myid,
+        string _numberOfChapters
+    )
+        internal
+    {
+        currentNumberOfChapters = uint8(parseInt(_numberOfChapters));
+        delete queryToType[_myid];
+        return;
+    }
+    
+    /**
+    * @dev 
+    */
+    function update()
+        internal
+    {
+        updateVerse();
+    }
+    
+    /**
+    * @dev 
+    */
+    function updateVerse()
+        internal
+    {
+        ++currentVerseNumber;
+        if(currentVerseNumber > currentChapterVersesNumber) {
+            updateChapter();
+        }
+        else {
+            return;
+        }
+    }
+    
+    /**
+    * @dev 
+    */
+    function updateChapter()
+        internal
+    {
+        currentVerseNumber = 1;
+        ++currentChapterNumber;
+        if(currentChapterNumber > currentNumberOfChapters) {
+            updateBook();
+        } else {
+            pause();
+            Pause();
+            myOraclizeUpdateChapterVerses();
+        }
+    }
+    
+    /**
+    * @dev 
+    */
+    function updateBook()
+        internal
+    {
+        currentChapterNumber = 1;
+        if((booksCompleted + 1) < totalBooks) {
+            pause();
+            Pause();
+            myOraclizeUpdateBookName();
+            myOraclizeUpdateNumberOfChapters();
+            myOraclizeUpdateChapterVerses();
+            ++booksCompleted;
+        } else {
+            delete currentBookName;
+            delete currentNumberOfChapters;
+            delete currentChapterVersesNumber;
+            delete currentChapterNumber;
+            delete currentVerseNumber;
+            delete currentURL;
+            return;
+        }
+    }
+    
+    /**
+    * @dev 
+    */
+    function myOraclizeUpdateChapterVerses()
+        internal
+    {
+        require(this.balance > oraclize_getPrice("IPFS"));
+        
+        string memory url = "xml(QmadTRozysyYSvWSqVZgZsCH2rUWKF1zVKTXpMC3mm9xih).xpath(/Bible/Book[@id='";
+        
+        url = strConcat(
+            url,
+            uint2str(booksCompleted + 1),
+            "']/Chapter[@id='",
+            uint2str(currentChapterNumber),
+            "']/numberOfVerses/text())"
+        );
+        
+        bytes32 id = oraclize_query("IPFS", url);
+        queryToType[id] = QueryType.GET_CHAPTER_VERSES;
+        
+        OraclizeQuery("Query sent; awaiting response...");
+    }
+    
+    /**
+    * @dev 
+    */
+    function myOraclizeUpdateBookName()
+        internal
+    {
+        require(this.balance > oraclize_getPrice("IPFS"));
+        
+        string memory url = "xml(QmadTRozysyYSvWSqVZgZsCH2rUWKF1zVKTXpMC3mm9xih).xpath(/Bible/Book[@id='";
+        
+        url = strConcat(
+            url,
+            uint2str(booksCompleted + 2),
+            "']/bookName/text())"
+        );
+        
+        bytes32 id = oraclize_query("IPFS", url);
+        queryToType[id] = QueryType.GET_BOOK_NAME;
+        
+        OraclizeQuery("Query sent; awaiting response...");
+    }
+    
+    /**
+    * @dev 
+    */
+    function myOraclizeUpdateNumberOfChapters()
+        internal
+    {
+        require(this.balance > oraclize_getPrice("IPFS"));
+        
+        string memory url = "xml(QmadTRozysyYSvWSqVZgZsCH2rUWKF1zVKTXpMC3mm9xih).xpath(/Bible/Book[@id='";
+        
+        url = strConcat(
+            url,
+            uint2str(booksCompleted + 2),
+            "']/numberOfChapters/text())"
+        );
+        
+        bytes32 id = oraclize_query("IPFS", url);
+        queryToType[id] = QueryType.GET_NUMBER_OF_CHAPTERS;
+        
+        OraclizeQuery("Query sent; awaiting response...");
+    }
+    
+    /**
+    * @dev 
+    */
+    function myOraclizeMintVerse()
+        internal
+    {
+        require(this.balance > oraclize_getPrice("IPFS"));
+        
+        string memory url = "xml(QmadTRozysyYSvWSqVZgZsCH2rUWKF1zVKTXpMC3mm9xih).xpath(/Bible/Book[@id='";
+        
+        url = strConcat(
+            url,
+            uint2str(booksCompleted + 1),
+            "']/Chapter[@id='",
+            uint2str(currentChapterNumber),
+            "']/Verse[@id='"
+        );
+        url = strConcat(
+            url,
+            uint2str(currentVerseNumber),
+            "']/text())"
+        );
+        
+        bytes32 id = oraclize_query("IPFS", currentURL);
+        queryToType[id] = QueryType.GET_VERSE;
+        queryToSender[id] = msg.sender;
+        
+        OraclizeQuery("Query sent; awaiting response...");
+    }
+    
+    
+    
+    
+    
+    
+    
+    /**
+    * @dev 
+    */
+    function parseChapterVersesQueryResponse(
+        string _stringArr
+    )
+        internal
+    {
+        // The variable for holding the quote count.
+        // If the quote count is equal to 2, then the temp string gets parsed into an int and pushed to the currentChapterVerses array.
+        uint8 quoteCount = 0;
+        // The variable to hold the number that is to be parsed to an int.
+        string memory digits;
+        
+        bytes memory bytesArr = bytes(_stringArr);
+        byte char;
+        for(uint8 i = 0; i < bytesArr.length; ++i) {
+            char = bytesArr[i];
+            if(char == 0x5d) break;
+            if(char == 0x5b ||  char == 0x2c || char == 0x20) continue;
+            if(char == 0x22) {
+                ++quoteCount;
+                if(quoteCount == 2) {
+                    //currentChapterVerses.push(uint8(parseInt(digits)));
+                    delete digits;
+                    quoteCount = 0;
+                }
+            }
+            string memory temp = bytes8ToString(bytes8(char));
+            digits = strConcat(digits, string(temp));
+        }
+    }
+    
+    /**
+    * @dev 
+    */
+    function bytes8ToString(
+        bytes8 x
+    )
+        public
+        returns (string)
+    {
+        bytes memory bytesString = new bytes(8);
+        uint charCount = 0;
+        for (uint j = 0; j < 8; j++) {
+            byte char = byte(bytes8(uint(x) * 2 ** (8 * j)));
+            if (char != 0) {
+                bytesString[charCount] = char;
+                charCount++;
+            }
+        }
+        bytes memory bytesStringTrimmed = new bytes(charCount);
+        for (j = 0; j < charCount; j++) {
+            bytesStringTrimmed[j] = bytesString[j];
+        }
+            return string(bytesStringTrimmed);
+    }
+    
+    /**
+    * @dev 
+    */
+    function updateURL()
+        internal
+    {
+        if(!(currentVerseNumber < currentChapterVersesNumber)) {
             currentVerseNumber = 1;
             ++currentChapterNumber;
         }
         
-        if(!(currentChapterNumber < currentChapterVerses.length)) {
+        if(!(currentChapterNumber < currentNumberOfChapters)) {
             currentChapterNumber = 1;
-            myOraclizeUpdateBook();
+            //myOraclizeUpdateBook();
+        } else {
+            currentURL = constructVerseTextURL();
         }
-        
-        currentURL = constructVerseTextURL();
     }
     
     /**
@@ -93,21 +419,13 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     function mint()
         payable
         external
+        whenNotPaused
         booksIncomplete
     {
         require(msg.value == 1 ether);
-        
-        //if(!(currentVerseNumber < currentChapterVerses[currentChapterNumber])) {
-        //    currentVerseNumber = 1;
-        //    ++currentChapterNumber;
-        //}
-        
-        //if(!(currentChapterNumber < currentChapterVerses.length)) {
-        //    currentChapterNumber = 1;
-        //    myOraclizeUpdateBook();
-        //}
-        
-        myOraclizeGetVerse();
+        pause();
+        Pause();
+        myOraclizeMintVerse();
     }
     
     /**
@@ -119,9 +437,9 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     )
         internal
     {
-        require(_to != address(0));
-        require(_tokenIndex != 0);
-        require(indexToOwner[_tokenIndex] == address(0));
+        assert(_to != address(0));
+        //require(_tokenIndex != 0);
+        assert(indexToOwner[_tokenIndex] == address(0));
 
         _addNFToken(_to, _tokenIndex);
 
@@ -194,10 +512,8 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
         bytes memory burl_1 = bytes(urlChapterVersesI);
         bytes memory burl_2 = bytes(_currentBookName);
         bytes memory burl_3 = bytes(urlChapterVersesII);
-        bytes memory burl_4 = bytes(_currentBookName);
-        bytes memory burl_5 = bytes(urlChapterVersesIII);
         
-        string memory url = new string(getLengthChapterVersesURL(burl_2, burl_4));
+        string memory url = new string(getLengthChapterVersesURL(burl_2));
         bytes memory burl = bytes(url);
             
         uint i = 0;
@@ -205,8 +521,6 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
         for (i = 0; i < burl_1.length; i++) burl[k++] = burl_1[i];
         for (i = 0; i < burl_2.length; i++) burl[k++] = burl_2[i];
         for (i = 0; i < burl_3.length; i++) burl[k++] = burl_3[i];
-        for (i = 0; i < burl_4.length; i++) burl[k++] = burl_4[i];
-        for (i = 0; i < burl_5.length; i++) burl[k++] = burl_5[i];
         
         url = string(burl);
         return url;
@@ -236,57 +550,191 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     * This one is unique to it's corresponding constructChapterVersesURL function.
     */
     function getLengthChapterVersesURL(
-        bytes _currentBookNameI,
-        bytes _currentBookNameII
+        bytes _currentBookName
     )
         internal
         view
         returns (uint256)
     {
         uint length = 0;
-        length += bytes(urlChapterVersesI).length + bytes(urlChapterVersesII).length + bytes(urlChapterVersesIII).length;
-        length += _currentBookNameI.length + _currentBookNameII.length;
+        length += bytes(urlChapterVersesI).length + bytes(urlChapterVersesII).length;
+        length += _currentBookName.length;
         return length;
     }
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // Ownership ---------------------------------------------------------------------------------------------------------
     /**
-    * @dev 
+    * @dev Mints a new NFT.
+    * @notice This is a private function which should be called from user-implemented external
+    * mint function. Its purpose is to show and properly initialize data structures when using this
+    * implementation.
+    * @param _to The address that will own the minted NFT.
+    * @param _tokenId of the NFT to be minted by the msg.sender.
     */
-    function myOraclizeGetVerse()
-        internal
-    {
-        require(this.balance > oraclize_getPrice("IPFS"));
-        bytes32 id = oraclize_query("IPFS", currentURL);
-        OraclizeQuery("Query sent; awaiting response...");
-        queryIds[id] = msg.sender;
-    }
+    //function _mint(
+    //    address _to,
+    //    uint256 _tokenId
+    //)
+    //    internal
+    //{
+    //    require(_to != address(0));
+    //    require(_tokenId != 0);
+    //    require(idToOwner[_tokenId] == address(0));
+
+    //    addNFToken(_to, _tokenId);
+
+    //    emit Transfer(address(0), _to, _tokenId);
+    //}
+
+    /**
+    * @dev Burns a NFT.
+    * @notice This is a private function which should be called from user-implemented external
+    * burn function. Its purpose is to show and properly initialize data structures when using this
+    * implementation.
+    * @param _owner Address of the NFT owner.
+    * @param _tokenId ID of the NFT to be burned.
+    */
+    //function _burn(
+    //    address _owner,
+    //    uint256 _tokenId
+    //)
+    //    validNFToken(_tokenId)
+    //    internal
+    //{
+    //    clearApproval(_owner, _tokenId);
+    //    removeNFToken(_owner, _tokenId);
+    //    emit Transfer(_owner, address(0), _tokenId);
+    //}
+    // End Ownership -----------------------------------------------------------------------------------------------------
+    
+    // Enumerable --------------------------------------------------------------------------------------------------------
+    /**
+    * @dev Mints a new NFT.
+    * @notice This is a private function which should be called from user-implemented external
+    * mint function. Its purpose is to show and properly initialize data structures when using this
+    * implementation.
+    * @param _to The address that will own the minted NFT.
+    * @param _tokenId of the NFT to be minted by the msg.sender.
+    */
+    //function _mint(
+    //    address _to,
+    //    uint256 _tokenId
+    //)
+    //    internal
+    //{
+    //    super._mint(_to, _tokenId);
+    //    tokens.push(_tokenId);
+    //}
+
+    /**
+    * @dev Burns a NFT.
+    * @notice This is a private function which should be called from user-implemented external
+    * burn function. Its purpose is to show and properly initialize data structures when using this
+    * implementation.
+    * @param _owner Address of the NFT owner.
+    * @param _tokenId ID of the NFT to be burned.
+    */
+    //function _burn(
+    //    address _owner,
+    //    uint256 _tokenId
+    //)
+    //    internal
+    //{
+    //    assert(tokens.length > 0);
+    //    super._burn(_owner, _tokenId);
+
+    //    uint256 tokenIndex = idToIndex[_tokenId];
+    //    uint256 lastTokenIndex = tokens.length.sub(1);
+    //    uint256 lastToken = tokens[lastTokenIndex];
+
+    //    tokens[tokenIndex] = lastToken;
+    //    tokens[lastTokenIndex] = 0;
+
+    //    tokens.length--;
+    //    idToIndex[_tokenId] = 0;
+    //    idToIndex[lastToken] = tokenIndex;
+    //}
     
     /**
-    * @dev The purpose of this function is that when the program state recognizes that it has
-    * run out of chapters to process (and has not come to the end of the Bible) it will call
-    * this function to retrieve the data for the next book.
-    * This data will include: the name of the book, and the array of chapter verses.
+    * @dev Removes a NFT from an address.
+    * @notice Use and override this function with caution. Wrong usage can have serious consequences.
+    * @param _from Address from wich we want to remove the NFT.
+    * @param _tokenId Which NFT we want to remove.
     */
-    function myOraclizeUpdateBook()
-        internal
-    {
-        ++booksCompleted;
-        currentBookName = booksOfTheBible[booksCompleted];
-        myOraclizeGetChapterVerses(booksOfTheBible[booksCompleted]);
-        currentURL = constructVerseTextURL();
-    }
-    
+    //function removeNFToken(
+    //    address _from,
+    //    uint256 _tokenId
+    //)
+    //internal
+    //{
+    //    super.removeNFToken(_from, _tokenId);
+    //    assert(ownerToIds[_from].length > 0);
+
+    //    uint256 tokenToRemoveIndex = idToOwnerIndex[_tokenId];
+    //    uint256 lastTokenIndex = ownerToIds[_from].length.sub(1);
+    //    uint256 lastToken = ownerToIds[_from][lastTokenIndex];
+
+    //    ownerToIds[_from][tokenToRemoveIndex] = lastToken;
+    //    ownerToIds[_from][lastTokenIndex] = 0;
+
+    //    ownerToIds[_from].length--;
+    //    idToOwnerIndex[_tokenId] = 0;
+    //    idToOwnerIndex[lastToken] = tokenToRemoveIndex;
+    //}
+
     /**
-    * @dev 
+    * @dev Assignes a new NFT to an address.
+    * @notice Use and override this function with caution. Wrong usage can have serious consequences.
+    * @param _to Address to wich we want to add the NFT.
+    * @param _tokenId Which NFT we want to add.
     */
-    function myOraclizeGetChapterVerses(
-        string _book
-    )
-        internal
-    {
-        require(this.balance > oraclize_getPrice("IPFS"));
-        string memory url = constructChapterVersesURL(_book);
-        oraclize_query("IPFS", url);
-        OraclizeQuery("Query sent; awaiting response...");
-    }
+    //function addNFToken(
+    //    address _to,
+    //    uint256 _tokenId
+    //)
+    //    internal
+    //{
+    //    super.addNFToken(_to, _tokenId);
+
+    //    uint256 length = ownerToIds[_to].length;
+    //    ownerToIds[_to].push(_tokenId);
+    //    idToOwnerIndex[_tokenId] = length;
+    //}
+    // End Enumerable ----------------------------------------------------------------------------------------------------
+    
+    // Metadata ----------------------------------------------------------------------------------------------------------
+    /**
+    * @dev Burns a NFT.
+    * @notice This is a internal function which should be called from user-implemented external
+    * burn function. Its purpose is to show and properly initialize data structures when using this
+    * implementation.
+    * @param _owner Address of the NFT owner.
+    * @param _tokenId ID of the NFT to be burned.
+    */
+    //function _burn(
+    //    address _owner,
+    //    uint256 _tokenId
+    //)
+    //    internal
+    //{
+    //    super._burn(_owner, _tokenId);
+
+    //    if (bytes(idToUri[_tokenId]).length != 0) {
+    //        delete idToUri[_tokenId];
+    //    }
+    //}
+    // End Metadata ------------------------------------------------------------------------------------------------------
 }

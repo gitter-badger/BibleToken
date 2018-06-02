@@ -1,6 +1,8 @@
 pragma solidity ^0.4.20;
 
+
 import "./Ownable.sol";
+
 
 /**
  * @title Pausable
@@ -32,7 +34,7 @@ contract Pausable is Ownable {
     * @dev called by the owner to pause, triggers stopped state
     */
     function pause()
-        onlyOwner
+        onlyOwnerOrContract
         whenNotPaused
         public
     {
@@ -44,7 +46,7 @@ contract Pausable is Ownable {
     * @dev called by the owner to unpause, returns to normal state
     */
     function unpause()
-        onlyOwner
+        onlyOwnerOrContract
         whenPaused
         public
     {

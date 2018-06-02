@@ -20,41 +20,42 @@ contract BibleTokenBase {
     /*** CONSTANTS ***/
 
     /// @dev Constants of non-value type are not yet supported, otherwise these would be constant
-    string[] internal booksOfTheBible = [
-        "Gensis",           "Exodus",           "Leviticus",
-        "Numbers",          "Deuteronomy",      "Joshua",
-        "Judges",           "Ruth",             "1 Samuel",
-        "2 Samuel",         "1 Kings",          "2 Kings",
-        "1 Chronicles",     "2 Chronicles",     "Ezra",
-        "Nehemiah",         "Esther",           "Job",
-        "Psalms",           "Proverbs",         "Ecclesiastes",
-        "Song of Solomon",  "Isaiah",           "Jeremiah",
-        "Lamentation",      "Ezekiel",          "Daniel",
-        "Hosea",            "Joel",             "Amos",
-        "Obadiah",          "Jonah",            "Micah",
-        "Nahum",            "Habakkuk",         "Zephaniah",
-        "Haggai",           "Zechariah",        "Malachi",
-        "Matthew",          "Mark",             "Luke",
-        "John",             "Acts",             "Romans",
-        "1 Corinthians",    "2 Corinthians",    "Galatians",
-        "Ephesians",        "Philippians",      "Colossians",
-        "1 Thessalonians",  "2 Thessalonians",  "1 Timothy",
-        "2 Timothy",        "Titus",            "Philemon",
-        "Hebrews",          "James",            "1 Peter",
-        "2 Peter",          "1 John",           "2 John",
-        "3 John",           "Jude",             "Revelation"
-    ];
+    //string[] internal booksOfTheBible = [
+    //    "Gensis",           "Exodus",           "Leviticus",
+    //    "Numbers",          "Deuteronomy",      "Joshua",
+    //    "Judges",           "Ruth",             "1 Samuel",
+    //    "2 Samuel",         "1 Kings",          "2 Kings",
+    //    "1 Chronicles",     "2 Chronicles",     "Ezra",
+    //    "Nehemiah",         "Esther",           "Job",
+    //    "Psalms",           "Proverbs",         "Ecclesiastes",
+    //    "Song of Solomon",  "Isaiah",           "Jeremiah",
+    //    "Lamentation",      "Ezekiel",          "Daniel",
+    //    "Hosea",            "Joel",             "Amos",
+    //    "Obadiah",          "Jonah",            "Micah",
+    //    "Nahum",            "Habakkuk",         "Zephaniah",
+    //    "Haggai",           "Zechariah",        "Malachi",
+    //    "Matthew",          "Mark",             "Luke",
+    //    "John",             "Acts",             "Romans",
+    //    "1 Corinthians",    "2 Corinthians",    "Galatians",
+    //    "Ephesians",        "Philippians",      "Colossians",
+    //    "1 Thessalonians",  "2 Thessalonians",  "1 Timothy",
+    //    "2 Timothy",        "Titus",            "Philemon",
+    //    "Hebrews",          "James",            "1 Peter",
+    //    "2 Peter",          "1 John",           "2 John",
+    //    "3 John",           "Jude",             "Revelation"
+    //];
+    
+    uint8 constant internal totalBooks = 66;
 
     // Base url for the verseText query
-    string constant internal urlVerseI      = "xml(QmZSjsND17sEbSPzyMub1czPbr1rXttTiCG6pN1znFz7wa).xpath(/Bible/Book[@name='";
+    string constant internal urlVerseI      = "xml(QmTwuWLqJHvcrV3NokMiFSRoadcA8AY5C3FWHBDXtKwZrp).xpath(/Bible/Book[@name='";
     string constant internal urlVerseII     = "']/Chapter[@id='";
     string constant internal urlVerseIII    = "']/Verse[@id='";
     string constant internal urlVerseIV     = "']/text())";
 
     // Base url for the  currentChapterVerses query
-    string constant internal urlChapterVersesI      = "xml(QmZSjsND17sEbSPzyMub1czPbr1rXttTiCG6pN1znFz7wa).xpath(/Bible/Book[@name='";
-    string constant internal urlChapterVersesII     = "']/numberOfChapters/text() | /Bible/Book[@name='";
-    string constant internal urlChapterVersesIII    = "']/Chapter/numberOfVerses/text())";
+    string constant internal urlChapterVersesI      = "xml(QmTwuWLqJHvcrV3NokMiFSRoadcA8AY5C3FWHBDXtKwZrp).xpath(/Bible/Book[@name='";
+    string constant internal urlChapterVersesII    = "']/Chapter/numberOfVerses/text())";
 
     /*** STORAGE ***/
 
@@ -75,13 +76,16 @@ contract BibleTokenBase {
 
     // // Mapping from owner to operator approvals
     // mapping (address => mapping (address => bool)) internal operatorApprovals;
-
-    string  public currentBookName;
-    uint8[] public currentChapterVerses;
-    uint8   public currentChapterNumber;
-    uint8   public currentVerseNumber;
     
-    string  public currentURL;
+    //uint8[] public currentChapterVerses;
     
-    uint8   public booksCompleted;
+    uint8  public booksCompleted;
+    
+    string public currentBookName;
+    uint8  public currentNumberOfChapters;
+    uint8  public currentChapterVersesNumber;
+    uint8  public currentChapterNumber;
+    uint8  public currentVerseNumber;
+    
+    string public currentURL;
 }
