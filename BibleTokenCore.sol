@@ -52,6 +52,14 @@ contract BibleTokenCore is BibleTokenMinting {
         return "Verse not minted yet, or invalid Book Name.";
     }
     
+    function addFunds()
+        external
+        payable
+        returns (string)
+    {
+        return "Successfully added funds.";
+    }
+    
     /**
      * @dev 
      */

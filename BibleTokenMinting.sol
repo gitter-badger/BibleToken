@@ -3,15 +3,10 @@ pragma solidity ^0.4.20;
 import "./BibleTokenEnumerable.sol";
 import "./Oraclize.sol";
 
-// I'm probably just gonna have to get the data chapter by chapter; including the books.
-// So the updating will go:
-//
-// UPDATE booksCompleted = 0; currentBookName; numberOfChapters; currentChapterVersesNumber; currentChapterNumber = 1; currentVerseNumber = 1;
-// if currentVerseNumber exceeds currentChapterVersesNumber AND currentChapterNumber != numberOfChapters
-// UPDATE currentChapterVersesNumber; currentChapterNumber++; currentVerseNumber = 1;
-// else if booksCompleted + 1 == 66
-// UPDATE booksCompletedSwitch = true; return;
-// UPDATE currentBookName; numberOfChapters; currentChapterVersesNumber; currentChapterNumber = 1; currentVerseNumber = 1;
+// TODO make test data to test minting logic offline quickly
+// TODO figure out the appropriate gas cost for the Oraclize queries
+// TODO figure out how to effectively pause the contract during Book/Chapter state updates
+// TODO figure out if an auction contract is needed to be able to more easily transfer tokens around through an API on the website
 
 contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     
@@ -75,20 +70,20 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
         
         if(queryToType[_myid] == QueryType.GET_VERSE) {
             _mintBibleToken(_myid, _result);
-            unpause();
-            Unpause();
+            //unpause();
+            //Unpause();
         } else if(queryToType[_myid] == QueryType.GET_CHAPTER_VERSES) {
             _updateChapterVerses(_myid, _result);
-            unpause();
-            Unpause();
+            //unpause();
+            //Unpause();
         } else if(queryToType[_myid] == QueryType.GET_BOOK_NAME) {
             _updateBookName(_myid, _result);
-            unpause();
-            Unpause();
+            //unpause();
+            //Unpause();
         } else if(queryToType[_myid] == QueryType.GET_NUMBER_OF_CHAPTERS) {
             _updateNumberOfChapters(_myid, _result);
-            unpause();
-            Unpause();
+            //unpause();
+            //Unpause();
         } else {
             revert(); // ?
         }
@@ -113,9 +108,9 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
         assert(bytes(token.verseText).length != 0);
         
         uint256 tokenIndex = tokens.push(token) - 1;
+        _mint(queryToSender[_myid], tokenIndex);
         delete queryToType[_myid];
         delete queryToSender[_myid];
-        _mint(queryToSender[_myid], tokenIndex);
         
         update();
     }
@@ -197,8 +192,8 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
         if(currentChapterNumber > currentNumberOfChapters) {
             updateBook();
         } else {
-            pause();
-            Pause();
+            //pause();
+            //Pause();
             myOraclizeUpdateChapterVerses();
         }
     }
@@ -211,8 +206,8 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     {
         currentChapterNumber = 1;
         if((booksCompleted + 1) < totalBooks) {
-            pause();
-            Pause();
+            //pause();
+            //Pause();
             myOraclizeUpdateBookName();
             myOraclizeUpdateNumberOfChapters();
             myOraclizeUpdateChapterVerses();
@@ -246,7 +241,7 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
             "']/numberOfVerses/text())"
         );
         
-        bytes32 id = oraclize_query("IPFS", url);
+        bytes32 id = oraclize_query("IPFS", url, 5000000);
         queryToType[id] = QueryType.GET_CHAPTER_VERSES;
         
         OraclizeQuery("Query sent; awaiting response...");
@@ -268,7 +263,7 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
             "']/bookName/text())"
         );
         
-        bytes32 id = oraclize_query("IPFS", url);
+        bytes32 id = oraclize_query("IPFS", url, 5000000);
         queryToType[id] = QueryType.GET_BOOK_NAME;
         
         OraclizeQuery("Query sent; awaiting response...");
@@ -290,7 +285,7 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
             "']/numberOfChapters/text())"
         );
         
-        bytes32 id = oraclize_query("IPFS", url);
+        bytes32 id = oraclize_query("IPFS", url, 5000000);
         queryToType[id] = QueryType.GET_NUMBER_OF_CHAPTERS;
         
         OraclizeQuery("Query sent; awaiting response...");
@@ -319,7 +314,7 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
             "']/text())"
         );
         
-        bytes32 id = oraclize_query("IPFS", url);
+        bytes32 id = oraclize_query("IPFS", url, 5000000);
         queryToType[id] = QueryType.GET_VERSE;
         queryToSender[id] = msg.sender;
         
@@ -336,12 +331,12 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     function mint()
         payable
         external
-        whenNotPaused
+        //whenNotPaused
         booksIncomplete
     {
         require(msg.value == 0.25 ether);
-        pause();
-        Pause();
+        //pause();
+        //Pause();
         myOraclizeMintVerse();
     }
     
