@@ -15,13 +15,11 @@ contract BibleTokenCore is BibleTokenMinting {
     {
         booksCompleted = 0;
         
-        currentBookName = "Genesis";
-        currentNumberOfChapters = 3;
+        currentBookName = "Esther";
+        currentNumberOfChapters = 1;
         currentChapterVersesNumber = 1;
         currentChapterNumber = 1;
         currentVerseNumber = 1;
-        
-        //currentURL = _constructVerseTextURL();
     }
     
     /**
@@ -58,6 +56,19 @@ contract BibleTokenCore is BibleTokenMinting {
         returns (string)
     {
         return "Successfully added funds.";
+    }
+    
+    /**
+     * @dev 
+     */
+    function checkBalance()
+        external
+        view
+        onlyOwner
+        returns (uint256)
+    {
+        uint256 balance = this.balance;
+        return balance;
     }
     
     /**
