@@ -1,8 +1,18 @@
+/**
+ * @file SupportsInterface.sol
+ * @author John DeBord <i@johndebord.tk>
+ * @date 2018
+ * 
+ * Utilizing 0xcert's ERC721 token implementation
+ * https://0xcert.org/
+ */
+
 pragma solidity ^0.4.20;
 
 import "./ERC165.sol";
 
 /**
+ * @title SupportsInterface
  * @dev Implementation of standard to detect smart contract interfaces.
  */
 contract SupportsInterface is ERC165 {
