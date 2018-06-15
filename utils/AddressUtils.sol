@@ -1,6 +1,16 @@
+/**
+ * @file AddressUtils.sol
+ * @author John DeBord <i@johndebord.tk>
+ * @date 2018
+ * 
+ * Utilizing 0xcert's ERC721 token implementation
+ * https://0xcert.org/
+ */
+
 pragma solidity ^0.4.20;
 
 /**
+ * @title AddressUtils
  * @dev Utility library of inline functions on addresses.
  */
 library AddressUtils {

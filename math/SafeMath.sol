@@ -1,6 +1,16 @@
+/**
+ * @file SafeMath.sol
+ * @author John DeBord <i@johndebord.tk>
+ * @date 2018
+ * 
+ * Utilizing 0xcert's ERC721 token implementation
+ * https://0xcert.org/
+ */
+
 pragma solidity ^0.4.20;
 
 /**
+ * @title SafeMath
  * @dev Math operations with safety checks that throw on error. This contract is based
  * on the source code at https://goo.gl/iyQsmU.
  */

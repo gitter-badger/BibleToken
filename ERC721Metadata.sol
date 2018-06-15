@@ -1,6 +1,16 @@
+/**
+ * @file ERC721Metadata.sol
+ * @author John DeBord <i@johndebord.tk>
+ * @date 2018
+ * 
+ * Utilizing 0xcert's ERC721 token implementation
+ * https://0xcert.org/
+ */
+
 pragma solidity ^0.4.20;
 
 /**
+ * @title ERC721Metadata
  * @dev Optional metadata extension for ERC-721 non-fungible token standard.
  * See https://goo.gl/pc9yoS.
  */
@@ -22,13 +32,4 @@ interface ERC721Metadata {
         view
         returns (string _symbol);
 
-    /**
-    * @dev Returns a distinct Uniform Resource Identifier (URI) for a given asset. It Throws if
-    * `_tokenId` is not a valid NFT. URIs are defined in RFC3986. The URI may point to a JSON file
-    * that conforms to the "ERC721 Metadata JSON Schema".
-    */
-    function tokenURI(uint256 _tokenId)
-        external
-        view
-        returns (string);
 }

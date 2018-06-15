@@ -1,32 +1,47 @@
+/**
+ * @file BibleTokenOwnership.sol
+ * @author John DeBord <i@johndebord.tk>
+ * @date 2018
+ * 
+ * Utilizing 0xcert's ERC721 token implementation
+ * https://0xcert.org/
+ */
+
 pragma solidity ^0.4.20;
 
-import "./math/SafeMath.sol";
-import "./utils/AddressUtils.sol";
+import "./SafeMath.sol";
+import "./AddressUtils.sol";
 
-import "./ownership/Pausable.sol";
+import "./Pausable.sol";
 import "./ERC721.sol";
 import "./SupportsInterface.sol";
 import "./ERC721TokenReceiver.sol";
 
 /**
+ * @title BibleTokenOwnership
  * @dev Implementation of ERC-721 non-fungible token standard.
  */
-contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
+contract BibleTokenOwnership is
+    Pausable,
+    ERC721,
+    SupportsInterface
+{
+    
     using SafeMath for uint256;
     using AddressUtils for address;
 
     /**
-    * @dev A mapping from NFT ID to the address that owns it.
+    * @dev A mapping from BibleToken index to the address that owns it.
     */
     mapping (uint256 => address) internal indexToOwner;
 
     /**
-    * @dev Mapping from NFT ID to approved address.
+    * @dev Mapping from BibleToken index to approved address.
     */
     mapping (uint256 => address) internal indexToApprovals;
 
     /**
-    * @dev Mapping from owner address to count of his tokens.
+    * @dev Mapping from owner address to count of his/her BibleTokens.
     */
     mapping (address => uint256) internal ownerToBibleTokenCount;
 
@@ -36,18 +51,16 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     mapping (address => mapping (address => bool)) internal ownerToOperators;
 
     /**
-    * @dev Magic value of a smart contract that can recieve NFT.
+    * @dev Magic value of a smart contract that can recieve a BibleToken.
     */
     bytes4 constant MAGIC_ON_ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,uint256,bytes)")); // 0xf0b9e5ba;
 
     /**
-    * @dev Emits when ownership of any NFT changes by any mechanism. This event emits when NFTs are
-    * created (`from` == 0) and destroyed (`to` == 0). Exception: during contract creation, any
-    * number of NFTs may be created and assigned without emitting Transfer. At the time of any
-    * transfer, the approved address for that NFT (if any) is reset to none.
-    * @param _from Sender of NFT (if address is zero address it indicates token creation).
-    * @param _to Receiver of NFT (if address is zero address it indicates token destruction).
-    * @param _tokenIndex The NFT that got transfered.
+    * @dev Emits when ownership of any BibleToken changes by any mechanism. This event emits when BibleTokens are
+    * created (`from` == 0) and destroyed (`to` == 0).
+    * @param _from Sender of a BibleToken (if address is zero address it indicates token creation).
+    * @param _to Receiver of a BibleToken (if address is zero address it indicates token destruction).
+    * @param _tokenIndex The index of the BibleToken that got transfered.
     */
     event Transfer(
         address indexed _from,
@@ -56,12 +69,12 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     );
 
     /**
-    * @dev This emits when the approved address for an NFT is changed or reaffirmed. The zero
+    * @dev This emits when the approved address for a BibleToken is changed or reaffirmed. The zero
     * address indicates there is no approved address. When a Transfer event emits, this also
-    * indicates that the approved address for that NFT (if any) is reset to none.
-    * @param _owner Owner of NFT.
+    * indicates that the approved address for that BibleToken (if any) is reset to none.
+    * @param _owner Owner of a BibleToken.
     * @param _approved Address that we are approving.
-    * @param _tokenIndex NFT which we are approving.
+    * @param _tokenIndex BibleToken index which we are approving.
     */
     event Approval(
         address indexed _owner,
@@ -71,8 +84,8 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
 
     /**
     * @dev This emits when an operator is enabled or disabled for an owner. The operator can manage
-    * all NFTs of the owner.
-    * @param _owner Owner of NFT.
+    * all BibleTokens of the owner.
+    * @param _owner Owner of a BibleToken.
     * @param _operator Address to which we are setting operator rights.
     * @param _approved Status of operator rights(true if operator rights are given and false if
     * revoked).
@@ -84,8 +97,8 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     );
 
     /**
-    * @dev Guarantees that the msg.sender is an owner or operator of the given NFT.
-    * @param _tokenIndex ID of the NFT to validate.
+    * @dev Guarantees that the msg.sender is an owner or operator of the given BibleToken.
+    * @param _tokenIndex Index of the BibleToken to validate.
     */
     modifier canOperate(
         uint256 _tokenIndex
@@ -96,8 +109,8 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     }
 
     /**
-    * @dev Guarantees that the msg.sender is allowed to transfer NFT.
-    * @param _tokenIndex ID of the NFT to transfer.
+    * @dev Guarantees that the msg.sender is allowed to transfer a BibleToken.
+    * @param _tokenIndex Index of the BibleToken to transfer.
     */
     modifier canTransfer(
         uint256 _tokenIndex
@@ -113,7 +126,7 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
 
     /**
     * @dev Guarantees that _tokenIndex is a valid Token.
-    * @param _tokenIndex ID of the NFT to validate.
+    * @param _tokenIndex Index of the BibleToken to validate.
     */
     modifier validNFToken(
         uint256 _tokenIndex
@@ -141,7 +154,7 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     }
 
     /**
-    * @dev Returns the number of NFTs owned by `_owner`. NFTs assigned to the zero address are
+    * @dev Returns the number of BibleTokens owned by `_owner`. BibleTokens assigned to the zero address are
     * considered invalid, and this function throws for queries about the zero address.
     * @param _owner Address for whom to query the balance.
     */
@@ -157,9 +170,9 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     }
 
     /**
-    * @dev Returns the address of the owner of the NFT. NFTs assigned to zero address are considered
+    * @dev Returns the address of the owner of the BibleToken. BibleTokens assigned to zero address are considered
     * invalid, and queries about them do throw.
-    * @param _tokenIndex The identifier for an NFT.
+    * @param _tokenIndex Index of the BibleToken.
     */
     function ownerOf(
         uint256 _tokenIndex
@@ -173,15 +186,15 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     }
 
     /**
-    * @dev Transfers the ownership of an NFT from one address to another address.
+    * @dev Transfers the ownership of a BibleToken from one address to another address.
     * @notice Throws unless `msg.sender` is the current owner, an authorized operator, or the
-    * approved address for this NFT. Throws if `_from` is not the current owner. Throws if `_to` is
-    * the zero address. Throws if `_tokenId` is not a valid NFT. When transfer is complete, this
+    * approved address for this BibleToken. Throws if `_from` is not the current owner. Throws if `_to` is
+    * the zero address. Throws if `_tokenIndex` is not a valid BibleToken. When transfer is complete, this
     * function checks if `_to` is a smart contract (code size > 0). If so, it calls `onERC721Received`
     * on `_to` and throws if the return value is not `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
-    * @param _from The current owner of the NFT.
+    * @param _from The current owner of the BibleToken.
     * @param _to The new owner.
-    * @param _tokenIndex The NFT to transfer.
+    * @param _tokenIndex Index of the BibleToken to transfer.
     * @param _data Additional data with no specified format, sent in call to `_to`.
     */
     function safeTransferFrom(
@@ -196,12 +209,12 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     }
 
     /**
-    * @dev Transfers the ownership of an NFT from one address to another address.
+    * @dev Transfers the ownership of a BibleToken from one address to another address.
     * @notice This works identically to the other function with an extra data parameter, except this
     * function just sets data to ""
-    * @param _from The current owner of the NFT.
+    * @param _from The current owner of the BibleToken.
     * @param _to The new owner.
-    * @param _tokenIndex The NFT to transfer.
+    * @param _tokenIndex Index of the BibleToken to transfer.
     */
     function safeTransferFrom(
         address _from,
@@ -215,13 +228,13 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
 
     /**
     * @dev Throws unless `msg.sender` is the current owner, an authorized operator, or the approved
-    * address for this NFT. Throws if `_from` is not the current owner. Throws if `_to` is the zero
-    * address. Throws if `_tokenId` is not a valid NFT.
-    * @notice The caller is responsible to confirm that `_to` is capable of receiving NFTs or else
+    * address for this BibleToken. Throws if `_from` is not the current owner. Throws if `_to` is the zero
+    * address. Throws if `_tokenIndex` is not a valid BibleToken.
+    * @notice The caller is responsible to confirm that `_to` is capable of receiving BibleTokens or else
     * they maybe be permanently lost.
-    * @param _from The current owner of the NFT.
+    * @param _from The current owner of the BibleToken.
     * @param _to The new owner.
-    * @param _tokenIndex The NFT to transfer.
+    * @param _tokenIndex Index of the BibleToken to transfer.
     */
     function transferFrom(
         address _from,
@@ -240,11 +253,11 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     }
 
     /**
-    * @dev Set or reaffirm the approved address for an NFT.
+    * @dev Set or reaffirm the approved address for a BibleToken.
     * @notice The zero address indicates there is no approved address. Throws unless `msg.sender` is
-    * the current NFT owner, or an authorized operator of the current owner.
-    * @param _approved Address to be approved for the given NFT ID.
-    * @param _tokenIndex ID of the token to be approved.
+    * the current BibleToken owner, or an authorized operator of the current owner.
+    * @param _approved Address to be approved for the given BibleToken index.
+    * @param _tokenIndex Index of the BibleToken to be approved.
     */
     function approve(
         address _approved,
@@ -281,9 +294,9 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     }
 
     /**
-    * @dev Get the approved address for a single NFT.
-    * @notice Throws if `_tokenId` is not a valid NFT.
-    * @param _tokenIndex ID of the NFT to query the approval of.
+    * @dev Get the approved address for a single BibleToken.
+    * @notice Throws if `_tokenIndex` is not a valid BibleToken.
+    * @param _tokenIndex Index of the BibleToken to query the approval of.
     */
     function getApproved(
         uint256 _tokenIndex
@@ -298,7 +311,7 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
 
     /**
     * @dev Checks if `_operator` is an approved operator for `_owner`.
-    * @param _owner The address that owns the NFTs.
+    * @param _owner The address that owns the BibleTokens.
     * @param _operator The address that acts on behalf of the owner.
     */
     function isApprovedForAll(
@@ -316,9 +329,9 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
 
     /**
     * @dev Actually perform the safeTransferFrom.
-    * @param _from The current owner of the NFT.
+    * @param _from The current owner of the BibleToken.
     * @param _to The new owner.
-    * @param _tokenIndex The NFT to transfer.
+    * @param _tokenIndex Index of the BibleToken to transfer.
     * @param _data Additional data with no specified format, sent in call to `_to`.
     */
     function _safeTransferFrom(
@@ -347,7 +360,7 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     * @dev Actually preforms the transfer.
     * @notice Does NO checks.
     * @param _to Address of a new owner.
-    * @param _tokenIndex The NFT that is being transferred.
+    * @param _tokenIndex Index of the BibleToken that is being transferred.
     */
     function _transfer(
         address _to,
@@ -365,8 +378,8 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     }
 
     /**
-    * @dev Clears the current approval of a given NFT ID.
-    * @param _tokenIndex ID of the NFT to be transferred.
+    * @dev Clears the current approval of a given BibleToken index.
+    * @param _tokenIndex Index of the BibleToken to be transferred.
     */
     function clearApproval(
         address _owner,
@@ -379,10 +392,10 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     }
 
     /**
-    * @dev Removes a NFT from owner.
+    * @dev Removes a BibleToken from owner.
     * @notice Use and override this function with caution. Wrong usage can have serious consequences.
-    * @param _from Address from wich we want to remove the NFT.
-    * @param _tokenIndex Which NFT we want to remove.
+    * @param _from Address from wich we want to remove the BibleToken.
+    * @param _tokenIndex Index of the BibleToken we want to remove.
     */
     function removeNFToken(
         address _from,
@@ -397,10 +410,10 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
     }
 
     /**
-    * @dev Assignes a new NFT to owner.
+    * @dev Assignes a new BibleToken to owner.
     * @notice Use and override this function with caution. Wrong usage can have serious consequences.
-    * @param _to Address to wich we want to add the NFT.
-    * @param _tokenIndex Which NFT we want to add.
+    * @param _to Address to wich we want to add the BibleToken.
+    * @param _tokenIndex Index of the BibleToken we want to add.
     */
     function addNFToken(
         address _to,
@@ -413,4 +426,5 @@ contract BibleTokenOwnership is Pausable, ERC721, SupportsInterface {
         indexToOwner[_tokenIndex] = _to;
         ownerToBibleTokenCount[_to] = ownerToBibleTokenCount[_to].add(1);
     }
+    
 }

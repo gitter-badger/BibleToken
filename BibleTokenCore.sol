@@ -1,14 +1,27 @@
+/**
+ * @file BibleTokenCore.sol
+ * @author John DeBord <i@johndebord.tk>
+ * @date 2018
+ */
+
 pragma solidity ^0.4.20;
 
 import "./BibleTokenMinting.sol";
 
 /**
- * @dev 
+ * @title BibleTokenCore
+ * @dev This contract gets the wheels turning; initializing the "Genesis" state
+ * variables so that we can start writing/minted the Bible to the blockchain!
+ * This contract also contains the additional function to look up and read any
+ * given verse that has been written blockchain.
  */
-contract BibleTokenCore is BibleTokenMinting {
+contract BibleTokenCore is
+    BibleTokenMinting
+{
     
     /**
-     * @dev 
+     * @dev The constructor of this contract; initialzes all state variables in
+     * accordane to the book of "Genesis".
      */
     function BibleTokenCore()
         public
@@ -23,7 +36,14 @@ contract BibleTokenCore is BibleTokenMinting {
     }
     
     /**
-     * @dev 
+     * @dev This is the function that will allow anyone in the world that has access
+     * to the Ethereum blockchain to be able to look up any verse in the Bible that has been minted
+     * through this contract for no cost! That is the awesome part about writing the Bible
+     * to the blockchain; that once it has been written, it will remain immutable and
+     * be accessible to anyone who has access to the Ethereum blockchain.
+     * @param _book The given book of the Bible.
+     * @param _chapter The given chapter of the Bible.
+     * @param _verse The given verse of the Bible.
      */
     function retrieveVerse(
         string _book,
@@ -50,6 +70,10 @@ contract BibleTokenCore is BibleTokenMinting {
         return "Verse not minted yet, or invalid Book Name.";
     }
     
+    /**
+     * @dev This function is used for debugging purposes when calculating the differing
+     * Oraclize queries.
+     */
     function addFunds()
         external
         payable
@@ -59,7 +83,8 @@ contract BibleTokenCore is BibleTokenMinting {
     }
     
     /**
-     * @dev 
+     * @dev This function is used for debugging purposes when calculating the differing
+     * Oraclize queries.
      */
     function checkBalance()
         external
@@ -72,7 +97,8 @@ contract BibleTokenCore is BibleTokenMinting {
     }
     
     /**
-     * @dev 
+     * @dev Withdraws the current balance of the contract; this can only be done by the
+     * owner of the contract.
      */
     function withdrawBalance()
         external
@@ -83,14 +109,4 @@ contract BibleTokenCore is BibleTokenMinting {
         owner.send(balance);
     }
     
-    /**
-     * @dev 
-     */
-    //function _constructVerseTextURL()
-    //    internal
-    //    view
-    //    returns (string)
-    //{
-    //    return super.constructVerseTextURL();
-    //}
 }

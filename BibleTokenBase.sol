@@ -1,15 +1,29 @@
+/**
+ * @file BibleTokenBase.sol
+ * @author John DeBord <i@johndebord.tk>
+ * @date 2018
+ */
+
 pragma solidity ^0.4.20;
 
 /**
- * @dev The base contract holding all the data unique to this contract.
+ * @title BibleTokenBase
+ * @dev This contract is the base contract upon which the idea of BibleToken will
+ * be built upon. It includes the Token data structure and the necessary state variables
+ * that allow the contract to keep track of which verse is to be minted next.
  */
 contract BibleTokenBase {
-    /*** EVENTS ***/
-
-    // event VerseMinted(address indexed _owner, uint256 _verseId);
 
     /*** DATA TYPES ***/
 
+    /**
+    * @dev The primary data structure that signifies a verse in the Bible.
+    * The structure is akin to if you were to open up your Bible to find a particular verse.
+    * First you go to the name of the book.
+    * Then you search through the book until you come to the chapter you're looking for.
+    * Next you go the verse number.
+    * And lastly you read the verse at that given number.
+    */
     struct Token {
         string bookName;
         uint8  chapterNumber;
@@ -18,74 +32,31 @@ contract BibleTokenBase {
     }
 
     /*** CONSTANTS ***/
-
-    /// @dev Constants of non-value type are not yet supported, otherwise these would be constant
-    //string[] internal booksOfTheBible = [
-    //    "Gensis",           "Exodus",           "Leviticus",
-    //    "Numbers",          "Deuteronomy",      "Joshua",
-    //    "Judges",           "Ruth",             "1 Samuel",
-    //    "2 Samuel",         "1 Kings",          "2 Kings",
-    //    "1 Chronicles",     "2 Chronicles",     "Ezra",
-    //    "Nehemiah",         "Esther",           "Job",
-    //    "Psalms",           "Proverbs",         "Ecclesiastes",
-    //    "Song of Solomon",  "Isaiah",           "Jeremiah",
-    //    "Lamentation",      "Ezekiel",          "Daniel",
-    //    "Hosea",            "Joel",             "Amos",
-    //    "Obadiah",          "Jonah",            "Micah",
-    //    "Nahum",            "Habakkuk",         "Zephaniah",
-    //    "Haggai",           "Zechariah",        "Malachi",
-    //    "Matthew",          "Mark",             "Luke",
-    //    "John",             "Acts",             "Romans",
-    //    "1 Corinthians",    "2 Corinthians",    "Galatians",
-    //    "Ephesians",        "Philippians",      "Colossians",
-    //    "1 Thessalonians",  "2 Thessalonians",  "1 Timothy",
-    //    "2 Timothy",        "Titus",            "Philemon",
-    //    "Hebrews",          "James",            "1 Peter",
-    //    "2 Peter",          "1 John",           "2 John",
-    //    "3 John",           "Jude",             "Revelation"
-    //];
     
+    /**
+    * @dev This constant goes hand-in-hand with its counterpart variable, `bookCompleted`.
+    * They are needed so that the contract can keep track of if the entire Bible has been minted.
+    * If it has, then it will be no longer possible to mint a verse, since the entire Bible
+    * will have been written to the blockchain.
+    */
     uint8 constant internal totalBooks = 66;
 
-    // Base url for the verseText query
-    string constant internal urlVerseI      = "xml(QmTwuWLqJHvcrV3NokMiFSRoadcA8AY5C3FWHBDXtKwZrp).xpath(/Bible/Book[@name='";
-    string constant internal urlVerseII     = "']/Chapter[@id='";
-    string constant internal urlVerseIII    = "']/Verse[@id='";
-    string constant internal urlVerseIV     = "']/text())";
-
-    // Base url for the  currentChapterVerses query
-    string constant internal urlChapterVersesI      = "xml(QmTwuWLqJHvcrV3NokMiFSRoadcA8AY5C3FWHBDXtKwZrp).xpath(/Bible/Book[@name='";
-    string constant internal urlChapterVersesII    = "']/Chapter/numberOfVerses/text())";
-
     /*** STORAGE ***/
-
-    // // The array to hold all of the tokens (verses of The Bible)
-    // Token[] internal tokens;
-
-    // // Mapping from token ID to owner
-    // mapping (uint256 => address) internal tokenOwner;
-
-    // // Mapping from owner to number of owned token
-    // mapping (address => uint256) internal ownedTokensCount;
-
-    // // Mapping from owner to list of owned token IDs
-    // mapping (address => uint256[]) internal ownedTokens;
-
-    // // Mapping from token ID to approved address
-    // mapping (uint256 => address) internal tokenApprovals;
-
-    // // Mapping from owner to operator approvals
-    // mapping (address => mapping (address => bool)) internal operatorApprovals;
     
-    //uint8[] public currentChapterVerses;
-    
+    /**
+    * @dev This variable keeps track of how many books have been completed.
+    */
     uint8  public booksCompleted;
     
+    /**
+    * @dev These variables, including the above, `booksCompleted`, are essentially the
+    * state of the contract. They will change accordingly when after a verse has been
+    * successfully minted.
+    */
     string public currentBookName;
     uint8  public currentNumberOfChapters;
     uint8  public currentChapterVersesNumber;
     uint8  public currentChapterNumber;
     uint8  public currentVerseNumber;
     
-    //string public currentURL;
 }

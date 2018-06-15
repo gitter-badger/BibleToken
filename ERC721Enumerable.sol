@@ -1,6 +1,16 @@
+/**
+ * @file ERC721Enumerable.sol
+ * @author John DeBord <i@johndebord.tk>
+ * @date 2018
+ * 
+ * Utilizing 0xcert's ERC721 token implementation
+ * https://0xcert.org/
+ */
+
 pragma solidity ^0.4.20;
 
 /**
+ * @title ERC721Enumerable
  * @dev Optional enumeration extension for ERC-721 non-fungible token standard.
  * See https://goo.gl/pc9yoS.
  */
@@ -14,30 +24,5 @@ interface ERC721Enumerable {
         external
         view
         returns (uint256);
-
-    /**
-    * @dev Returns the token identifier for the `_index`th NFT. Sort order is not specified.
-    * @param _index A counter less than `totalSupply()`.
-    */
-    //function tokenByIndex(
-    //    uint256 _index
-    //)
-    //    external
-    //    view
-    //    returns (uint256);
-
-    /**
-    * @dev Returns the token identifier for the `_index`th NFT assigned to `_owner`. Sort order is
-    * not specified. It throws if `_index` >= `balanceOf(_owner)` or if `_owner` is the zero address,
-    * representing invalid NFTs.
-    * @param _owner An address where we are interested in NFTs owned by them.
-    * @param _index A counter less than `balanceOf(_owner)`.
-    */
-    //function tokenOfOwnerByIndex(
-    //    address _owner,
-    //    uint256 _index
-    //)
-    //    external
-    //    view
-    //    returns (uint256);
+        
 }

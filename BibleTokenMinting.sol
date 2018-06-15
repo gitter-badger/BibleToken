@@ -1,86 +1,71 @@
+/**
+ * @file BibleTokenMinting.sol
+ * @author John DeBord <i@johndebord.tk>
+ * @date 2018
+ */
+
 pragma solidity ^0.4.20;
 
 import "./BibleTokenEnumerable.sol";
 import "./Oraclize.sol";
 
-// TODO make test data to test minting logic offline quickly
-// TODO figure out the appropriate gas cost for the Oraclize queries
-// TODO figure out how to effectively pause the contract during Book/Chapter state updates
-// TODO figure out if an auction contract is needed to be able to more easily transfer tokens around through an API on the website
-
-// NOTE that gas cost must be considered that a __callback will be calling other functions; thus a higher gas cost of 60k in the mint verse function
-
-// TODO test how much gas is used in the __callback
-// TODO test how much gas is used in each individual function that is called from the __callback with the longest verse in the Bible
-
-// NOTE
-// My calculation for the gas cost of minting a verse:
-// Contract with empty string initialized: 87137 gas
-// Contract with longest verse in the Bible (542 characters) string initialized: 480315
-// (480315 - 87137) / 542 = 725.420664207 gas per character
-
-// TODO (Updated)
-// [X] Get the correct gas prices for each of the oraclizeQuery functions
-// [X] Get the pause contract up and running
-// [X] Fix the retrieve verse function
-// [ ] Clean up code
-// [ ] Add detailed comments to all functions
-// [ ] Ask for someone to audit the code to see if there's any problems (possibly a webcam conversation)
-// [ ] Reach out to Ilya to see if he can whip up anything for the front-end
-// [ ] Implement a way to update the contract if need be
-// [ ] Check whch variables the owner should have the authority to change in case of gas price changes etc.
-// [ ] Possibly increase gas cost of Oraclize queries to increase the speed of the query.
-
-// NOTE
-// 0.0231108 :: 0.03 ether per verse should be able to handle any mint call.
-
-// NOTE
-// If no settings are specified, Oraclize will use the default values of 200,000 gas and 20 GWei.
-// 20 Gwei is the maximum measured gas price amount at https://ethgasstation.info/ I like it like this.
-// 0.49 minutes average confirmation time
-// oraclize_setCustomGasPrice(4000000000); set in wei not Gwei for this function
-
-// 920,000 will get the job done for getting and storing any verse in the Bible. It failed at 910,000 <= x < 920,000 gas
-// 60,000 will get the job done for updating the state. It failed at 50,000 <= x < 60,000 gas
-
-contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
+/**
+ * @title BibleTokenMinting
+ * @dev This contract is where all the action takes place. It contains all the necessary functions
+ * and variables for the minting process to take place; heavily utilizing the Oraclize API.
+ */
+contract BibleTokenMinting is
+    BibleTokenEnumerable,
+    usingOraclize
+{
     
     /**
-    * @dev 
+    * @dev This enumeration is used specifically for the `__callback` function; when an Oraclize query
+    * is sent out the function sending the store the query type to the mapping `queryToType`.
+    * Thus when Oraclize calls the `__callback` function it will know exactly which functions to execute;
+    * whether that be minting a token or updating certain state variables.
     */
     enum QueryType {GET_VERSE, GET_CHAPTER_VERSES, GET_BOOK_NAME, GET_NUMBER_OF_CHAPTERS}
     
     /**
-    * @dev 
+    * @dev This mapping is used hand-in-hand with the enumeration `QueryType`, so that the query types
+    * can be effectively stored, looked-up, and deleted upon completion of whatever functionaility was called.
     */
     mapping (bytes32 => QueryType) queryToType;
     
     /**
-    * @dev This mapping is very important; without it, there would be no way for a BibleToken to get minted to any address.
-    * Thus this mappng is used to keep track of the query Ids and their associated addresses (msg.sender).
-    * The Id will get written to this mapping on a successfull query. And will then get deleted upon completion of the minting process.
+    * @dev This mapping is very important; without it, there would be no way for a BibleToken to get
+    * minted to any address. Thus this mappng is used to keep track of the query Ids and their associated
+    * addresses (`msg.sender`). The Id will get written to this mapping upon a successfull query. And will
+    * then get deleted upon completion of the minting process.
     */
     mapping (bytes32 => address) queryToSender;
     
     /**
-    * @dev This variable is very important to sustain the contract's pausability in between tokens getting minted.
-    * When an Oraclize query is sent out this counter is incremented.
-    * When the __callback completes its duty the counter will get decremented.
-    * After it gets decremented this variable gets checked if there are any other Oraclize queries that have not yet completed.
-    * The counter will be == 0 once all __callbacks have been completed; other it will be nonzero.
+    * @dev This variable is used to sustain the contract's halting functionality in between tokens
+    * getting minted. When an Oraclize query is sent out this counter is incremented.
+    * When the `__callback` completes its duty the counter will get decremented.
+    * After it gets decremented this variable gets checked if there are any other Oraclize queries that
+    * have not yet completed. The counter will be == 0 once all `__callbacks` have been completed;
+    * otherwise this variable will be non-zero.
     */
     uint8 public queryCount = 0;
     
     /**
-    * @dev This variable is important because it controls how the contract halts other mint calls while it is already currently minting a verse.
-    * It acts just like the pause() function, except that it is purely internal, so that no one from the outside can halt the minting
-    * process whenever they want.
+    * @dev This variable controls how the contract halts other mint calls while it is already currently
+    * minting a verse. It acts just like the `pause()` function, except that it is purely internal,
+    * so that no one from the outside can halt the minting process whenever they want.
     * This variable works hand-in-hand with the halt modifier and halt function.
     */
     bool public halted = false;
     
     /**
-    * @dev The VerseMinted event is fired when a new BibleToken is minted.
+    * @dev Emits when a new BibleToken is minted.
+    * @param _owner The owner of the BibleToken that has been minted.
+    * @param _bookName The given book name in the Bible.
+    * @param _chapterNumber The given chapter number in the Bible.
+    * @param _verseNumber The given verse number in the Bible.
+    * @param _verseText The text of that particular verse in the Bible.
     */
     event VerseMinted(
         address _owner,
@@ -91,19 +76,22 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     );
     
     /**
-    * @dev The OraclizeQuery event is fired when a new Oraclize query is sent.
+    * @dev Emits when a new Oraclize query is sent.
+    * @param _description The description of the Oraclize query.
     */
     event OraclizeQuery(
-        string description
+        string _description
     );
     
     /**
-    * @dev 
+    * @dev Emits when the contract has been halted to provide time for Oraclize to process the
+    * data and for the contract to mint the BibleToken without any duplicate verses being written
+    * to the Ethereum blockchain.
     */
     event Halt();
     
     /**
-    * @dev 
+    * @dev Emits when the contract has been unhalted, so that the next verse can be minted.
     */
     event Unhalt();
     
@@ -117,7 +105,9 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev 
+    * @dev Modifier that checks to see is the contract is currently in the process of it being halted.
+    * If it is halted, you will not be able to mint a verse.
+    * Once the verse has been minted and all state variable have been updated, then will you be able to mint the next verse.
     */
     modifier whenNotHalted() {
         require(!halted);
@@ -125,7 +115,8 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
 
     /**
-    * @dev 
+    * @dev Modifier that checks to see if the contract is currently in the process of being halted.
+    * If it is not halted halted, then you will be able to mint the next verse.
     */
     modifier whenHalted() {
         require(halted);
@@ -133,16 +124,9 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev 
-    */
-    function BibleTokenMinting()
-        public
-    {
-        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
-    }
-    
-    /**
-    * @dev 
+    * @dev This function halts the contract until the verse has been minted/written to the blockchain.
+    * It is an internal function, so it can only be called from within the contract and not outside
+    * from any individual.
     */
     function halt()
         whenNotHalted
@@ -153,7 +137,7 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
 
     /**
-    * @dev 
+    * @dev This function unhalts the contract to allow the next verse to be minted/written to the blockchain.
     */
     function unhalt()
         whenHalted
@@ -164,44 +148,30 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev 
+    * @dev This function controls when the contract is to be unhalted. `queryCount` initially starts
+    * off at 0. But is incremented each time there is an Oraclize query.
+    * Everytime Oraclize completes a `__callback` `queryCount` gets decremented by 1.
+    * Once `queryCount` is 0 it is then safe to unhalt the contract.
     */
     function callbackCheck()
         internal
     {
         if(queryCount == 0) {
             unhalt();
-            Unhalt();
-        } else
+        } else {
             return;
-    }
-    
-    /**
-    * @dev This is the function to call when an address wishes to mint the next Bible verse.
-    * It will not compute if the whole Bible has been minted to the blockchain, because then there will be
-    * no other verses left to mint. Also, the address must send the appropriate payment to this contract,
-    * because using the Oraclize service is not free. The amount sent must be the maximum needed to mint
-    * any given verse in the Bible; the longest being Esther 8:9, at a total character count of 528.
-    */
-    function mint()
-        payable
-        external
-        whenNotHalted
-        booksIncomplete
-    {
-        require(msg.value == 0.03 ether);
-        
-        halt();
-        Halt();
-        
-        myOraclizeMintVerse();
+        }
     }
     
     /**
     * @dev This is where all the minting action takes place. Since a BibleToken cannot be minted
     * unless it has the appropriate data, and that is only possible after the Oraclize query.
-    * Thus when someone calls the mint function, they will have to wait until Oraclize processes the query
-    * before they can access their BibleToken; which should take at most a couple minutes.
+    * Thus when someone calls the mint function, they will have to wait until Oraclize processes the query/queries
+    * before they can access their BibleToken; which should take at most take 1 minute according to https://ethgasstation.info/.
+    * @notice Depending on the `QueryType` a different branch of execution will follow; for example if the `QueryType`
+    * is `GET_VERSE`, the `__callback` will perform the operations for minting the verse returned by `_result`.
+    * @param _myid The ID of the query.
+    * @param _result The result of the Oraclize query.
     */
     function __callback(
         bytes32 _myid,
@@ -233,7 +203,31 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev 
+    * @dev This is the function to call when an address wishes to mint the next Bible verse.
+    * It will not compute if the whole Bible has been minted to the blockchain, because then there will be
+    * no other verses left to mint. Also, the address must send the appropriate payment to this contract,
+    * because using the Oraclize service is not free. The amount sent must be the maximum needed to mint
+    * any given verse in the Bible; the longest being Esther 8:9, at a total character count of 528.
+    */
+    function mint()
+        payable
+        external
+        whenNotHalted
+        booksIncomplete
+    {
+        require(msg.value == 0.03 ether);
+        
+        halt();
+        
+        myOraclizeMintVerse();
+    }
+    
+    /**
+    * @dev This function does the nitty-gritty operations of constructing the BibleToken
+    * and then pushing it to the array `tokens` that holds all of the BibleTokens.
+    * After which the `queryToSender` and `queryToType` variables get deleted.
+    * @param _myid The ID of the query.
+    * @param _verseText The Bible verse that is retrieved.
     */
     function _mintBibleToken(
         bytes32 _myid,
@@ -259,7 +253,10 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev This is the  minting function that updates the data structures relating to ownership when minting a BibleToken.
+    * @dev This function does even more of the nitty-gritty work of the minting process;
+    * updating the data structures relating to ownership of the particular BibleToken.
+    * @param _to The address to the owner of the BibleToken.
+    * @param _tokenIndex The index of the given BibleToken in the `tokens` array.
     */
     function _mint(
         address _to,
@@ -268,7 +265,6 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
         internal
     {
         assert(_to != address(0));
-        //require(_tokenIndex != 0);
         assert(indexToOwner[_tokenIndex] == address(0));
 
         _addNFToken(_to, _tokenIndex);
@@ -286,6 +282,8 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     
     /**
     * @dev The purpose of this function is to keep a logically consistent flow of the inheritance structure of this contract.
+    * @param _to The address to the owner of the BibleToken.
+    * @param _tokenIndex The index of the given BibleToken in the `tokens` array.
     */
     function _addNFToken(
         address _to,
@@ -297,49 +295,9 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev 
-    */
-    function _updateChapterVerses(
-        bytes32 _myid,
-        string _chapterVerses
-    )
-        internal
-    {
-        currentChapterVersesNumber = uint8(parseInt(_chapterVerses));
-        delete queryToType[_myid];
-        return;
-    }
-    
-    /**
-    * @dev 
-    */
-    function _updateBookName(
-        bytes32 _myid,
-        string _bookName
-    )
-        internal
-    {
-        currentBookName = _bookName;
-        delete queryToType[_myid];
-        return;
-    }
-    
-    /**
-    * @dev 
-    */
-    function _updateNumberOfChapters(
-        bytes32 _myid,
-        string _numberOfChapters
-    )
-        internal
-    {
-        currentNumberOfChapters = uint8(parseInt(_numberOfChapters));
-        delete queryToType[_myid];
-        return;
-    }
-    
-    /**
-    * @dev 
+    * @dev This function starts the update process that gets called at the end of minting a BibleToken.
+    * This is very important to do so that the contract can always keep the appropriate state variables for
+    * storing newly minted BibleTokens and for constructing Oraclize queries.
     */
     function update()
         internal
@@ -348,7 +306,9 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev 
+    * @dev This function updates the `currentVerseNumber` and then checks to see if it has surpassed
+    * the number of verses that are in the given chapter. If it exceeds that specific amount,
+    * it passes execution on to the `updateChapter()` function.
     */
     function updateVerse()
         internal
@@ -363,7 +323,8 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev 
+    * @dev This function updates the `currentChapterNumber` and resets the `currentVerseNumber` to 1.
+    * If the `currentChapterNumber` exceeds then execeution is passed on to the `updateBook()` function.
     */
     function updateChapter()
         internal
@@ -378,7 +339,10 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev 
+    * @dev This function is called once a whole book has been minted to the blockchain.
+    * Thus the contract must update the state variables to the next book in the Bible.
+    * If every book has been completed, then all state variables are deleted and it will be no
+    * longer possible to mint another verse to the blockchain through this contract.
     */
     function updateBook()
         internal
@@ -401,7 +365,66 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev 
+    * @dev This function updates the name of the book in the Bible that is retrieved.
+    * This function is necessary so that the contract stores the right name in a minted BibleToken.
+    * After which the `queryToType` variable get deleted.
+    * @param _myid The ID of the query.
+    * @param _bookName The name of the book of the Bible that is retrieved.
+    */
+    function _updateBookName(
+        bytes32 _myid,
+        string _bookName
+    )
+        internal
+    {
+        currentBookName = _bookName;
+        delete queryToType[_myid];
+        return;
+    }
+    
+    /**
+    * @dev This function updates the number of chapters in the given book in the Bible that is retrieved.
+    * This function is necessary so that contract knows when to update the state variables when
+    * every chapter in this book as been minted to the blockchain.
+    * After which the `queryToType` variable get deleted.
+    * @param _myid The ID of the query.
+    * @param _numberOfChapters The number of chapters in the given book that is retrieved.
+    */
+    function _updateNumberOfChapters(
+        bytes32 _myid,
+        string _numberOfChapters
+    )
+        internal
+    {
+        currentNumberOfChapters = uint8(parseInt(_numberOfChapters));
+        delete queryToType[_myid];
+        return;
+    }
+    
+    /**
+    * @dev This function updates the number of verses in a given chapter. This is necessary for the contract
+    * to know when it needs to get the data for the next chapter and for the contract to be able to store the
+    * appropriate verse number in a minted BibleToken.
+    * After which the `queryToType` variable get deleted.
+    * @param _myid The ID of the query.
+    * @param _chapterVerses The number of verses in the chapter that is retrieved.
+    */
+    function _updateChapterVerses(
+        bytes32 _myid,
+        string _chapterVerses
+    )
+        internal
+    {
+        currentChapterVersesNumber = uint8(parseInt(_chapterVerses));
+        delete queryToType[_myid];
+        return;
+    }
+    
+    /**
+    * @dev This function constructs the query string necessary for retrieving the text of a given Bible verse.
+    * Once the string has been constructed using the `strConcat()` function provided by Oraclize, the
+    * Oraclize query is sent out; afterwhich the `queryToType` and `queryToSender` variables are stored to
+    * keep track of the query.
     */
     function myOraclizeMintVerse()
         internal
@@ -432,7 +455,63 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev 
+    * @dev This function constructs the query string necessary for retrieving a given book name in the Bible.
+    * Once the string has been constructed using the `strConcat()` function provided by Oraclize, the
+    * Oraclize query is sent out; afterwhich the `queryToType` variable is stored to keep track of the query.
+    */
+    function myOraclizeUpdateBookName()
+        internal
+    {
+        require(this.balance > oraclize_getPrice("IPFS"));
+        
+        string memory url = "xml(QmR6NhVGtJvDRTMFYkBga6FaBcgUqZLHrDZb7fCqJzL85v).xpath(/Bible/Book[@id='";
+        
+        url = strConcat(
+            url,
+            uint2str(booksCompleted + 2),
+            "']/bookName/text())"
+        );
+        
+        bytes32 id = oraclize_query("IPFS", url, 60000);
+        ++queryCount;
+        queryToType[id] = QueryType.GET_BOOK_NAME;
+        
+        OraclizeQuery("Query sent; awaiting response...");
+    }
+    
+    /**
+    * @dev This function constructs the query string necessary for retrieving the number of chapters in a given book in the Bible.
+    * Once the string has been constructed using the `strConcat()` function provided by Oraclize, the
+    * Oraclize query is sent out; afterwhich the `queryToType` variable is stored to keep track of the query.
+    */
+    function myOraclizeUpdateNumberOfChapters()
+        internal
+    {
+        require(this.balance > oraclize_getPrice("IPFS"));
+        
+        string memory url = "xml(QmR6NhVGtJvDRTMFYkBga6FaBcgUqZLHrDZb7fCqJzL85v).xpath(/Bible/Book[@id='";
+        
+        url = strConcat(
+            url,
+            uint2str(booksCompleted + 2),
+            "']/numberOfChapters/text())"
+        );
+        
+        bytes32 id = oraclize_query("IPFS", url, 60000);
+        ++queryCount;
+        queryToType[id] = QueryType.GET_NUMBER_OF_CHAPTERS;
+        
+        OraclizeQuery("Query sent; awaiting response...");
+    }
+    
+    /**
+    * @dev This function constructs the query string necessary for retrieving the number of verses in a given Bible chapter.
+    * Once the string has been constructed using the `strConcat()` function provided by Oraclize, the
+    * Oraclize query is sent out; afterwhich the `queryToType` variable is stored to keep track of the query.
+    * @notice There are two versions of this function; the first one constructs the query for a book that has not
+    * been completed while the second one constructs the query for a book that has been completed.
+    * This is needed because there would be complications the query after a book has been finished, because the `booksCompleted`
+    * variable would not have been updated yet.
     */
     function myOraclizeUpdateChapterVersesI()
         internal
@@ -457,7 +536,13 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
     }
     
     /**
-    * @dev 
+    * @dev This function constructs the query string necessary for retrieving the number of verses in a given Bible chapter.
+    * Once the string has been constructed using the `strConcat()` function provided by Oraclize, the
+    * Oraclize query is sent out; afterwhich the `queryToType` variable is stored to keep track of the query.
+    * @notice There are two versions of this function; the first one constructs the query for a book that has not
+    * been completed while the second one constructs the query for a book that has been completed.
+    * This is needed because there would be complications the query after a book has been finished, because the `booksCompleted`
+    * variable would not have been updated yet.
     */
     function myOraclizeUpdateChapterVersesII()
         internal
@@ -481,404 +566,4 @@ contract BibleTokenMinting is BibleTokenEnumerable, usingOraclize {
         OraclizeQuery("Query sent; awaiting response...");
     }
     
-    /**
-    * @dev 
-    */
-    function myOraclizeUpdateBookName()
-        internal
-    {
-        require(this.balance > oraclize_getPrice("IPFS"));
-        
-        string memory url = "xml(QmR6NhVGtJvDRTMFYkBga6FaBcgUqZLHrDZb7fCqJzL85v).xpath(/Bible/Book[@id='";
-        
-        url = strConcat(
-            url,
-            uint2str(booksCompleted + 2),
-            "']/bookName/text())"
-        );
-        
-        bytes32 id = oraclize_query("IPFS", url, 60000);
-        ++queryCount;
-        queryToType[id] = QueryType.GET_BOOK_NAME;
-        
-        OraclizeQuery("Query sent; awaiting response...");
-    }
-    
-    /**
-    * @dev 
-    */
-    function myOraclizeUpdateNumberOfChapters()
-        internal
-    {
-        require(this.balance > oraclize_getPrice("IPFS"));
-        
-        string memory url = "xml(QmR6NhVGtJvDRTMFYkBga6FaBcgUqZLHrDZb7fCqJzL85v).xpath(/Bible/Book[@id='";
-        
-        url = strConcat(
-            url,
-            uint2str(booksCompleted + 2),
-            "']/numberOfChapters/text())"
-        );
-        
-        bytes32 id = oraclize_query("IPFS", url, 60000);
-        ++queryCount;
-        queryToType[id] = QueryType.GET_NUMBER_OF_CHAPTERS;
-        
-        OraclizeQuery("Query sent; awaiting response...");
-    }
-    
-    
-    
-    
-    
-    
-    
-    /**
-    * @dev 
-    */
-    //function parseChapterVersesQueryResponse(
-    //    string _stringArr
-    //)
-    //    internal
-    //{
-    //    // The variable for holding the quote count.
-    //    // If the quote count is equal to 2, then the temp string gets parsed into an int and pushed to the currentChapterVerses array.
-    //    uint8 quoteCount = 0;
-    //    // The variable to hold the number that is to be parsed to an int.
-    //    string memory digits;
-    //    
-    //    bytes memory bytesArr = bytes(_stringArr);
-    //    byte char;
-    //    for(uint8 i = 0; i < bytesArr.length; ++i) {
-    //        char = bytesArr[i];
-    //        if(char == 0x5d) break;
-    //        if(char == 0x5b ||  char == 0x2c || char == 0x20) continue;
-    //        if(char == 0x22) {
-    //            ++quoteCount;
-    //            if(quoteCount == 2) {
-    //                //currentChapterVerses.push(uint8(parseInt(digits)));
-    //                delete digits;
-    //                quoteCount = 0;
-    //            }
-    //        }
-    //        string memory temp = bytes8ToString(bytes8(char));
-    //        digits = strConcat(digits, string(temp));
-    //    }
-    //}
-    
-    /**
-    * @dev 
-    */
-    //function bytes8ToString(
-    //    bytes8 x
-    //)
-    //    public
-    //    returns (string)
-    //{
-    //    bytes memory bytesString = new bytes(8);
-    //    uint charCount = 0;
-    //    for (uint j = 0; j < 8; j++) {
-    //        byte char = byte(bytes8(uint(x) * 2 ** (8 * j)));
-    //        if (char != 0) {
-    //            bytesString[charCount] = char;
-    //            charCount++;
-    //        }
-    //    }
-    //    bytes memory bytesStringTrimmed = new bytes(charCount);
-    //    for (j = 0; j < charCount; j++) {
-    //        bytesStringTrimmed[j] = bytesString[j];
-    //    }
-    //        return string(bytesStringTrimmed);
-    //}
-    
-    /**
-    * @dev 
-    */
-    //function updateURL()
-    //    internal
-    //{
-    //    if(!(currentVerseNumber < currentChapterVersesNumber)) {
-    //        currentVerseNumber = 1;
-    //        ++currentChapterNumber;
-    //    }
-    //    
-    //    if(!(currentChapterNumber < currentNumberOfChapters)) {
-    //        currentChapterNumber = 1;
-    //        //myOraclizeUpdateBook();
-    //    } else {
-    //        currentURL = constructVerseTextURL();
-    //    }
-    //}
-    
-    /**
-    * @dev This function constructs the URL in the Oraclize query to retrieve the Bible verse text.
-    */
-    //function constructVerseTextURL()
-    //    internal
-    //    view
-    //    returns (string)
-    //{
-    //    bytes memory burl_1 = bytes(urlVerseI);
-    //    bytes memory burl_2 = bytes(currentBookName);
-    //    bytes memory burl_3 = bytes(urlVerseII);
-    //    bytes memory burl_4 = bytes(uint2str(currentChapterNumber));
-    //    bytes memory burl_5 = bytes(urlVerseIII);
-    //    bytes memory burl_6 = bytes(uint2str(currentVerseNumber));
-    //    bytes memory burl_7 = bytes(urlVerseIV);
-    //    
-    //    string memory url = new string(getLengthVerseTextURL(burl_2, burl_4, burl_6));
-    //    bytes memory burl = bytes(url);
-    //        
-    //    uint i = 0;
-    //    uint k = 0;
-    //    for (i = 0; i < burl_1.length; i++) burl[k++] = burl_1[i];
-    //    for (i = 0; i < burl_2.length; i++) burl[k++] = burl_2[i];
-    //    for (i = 0; i < burl_3.length; i++) burl[k++] = burl_3[i];
-    //    for (i = 0; i < burl_4.length; i++) burl[k++] = burl_4[i];
-    //    for (i = 0; i < burl_5.length; i++) burl[k++] = burl_5[i];
-    //    for (i = 0; i < burl_6.length; i++) burl[k++] = burl_6[i];
-    //    for (i = 0; i < burl_7.length; i++) burl[k++] = burl_7[i];
-    //    
-    //    url = string(burl);
-    //    return url;
-    //}
-    
-    /**
-    * @dev This function constructs the URL in the Oraclize query to update the data for calculating the next Oraclize query.
-    */
-    //function constructChapterVersesURL(
-    //    string _currentBookName
-    //)
-    //    internal
-    //    view
-    //    returns (string)
-    //{
-    //    bytes memory burl_1 = bytes(urlChapterVersesI);
-    //    bytes memory burl_2 = bytes(_currentBookName);
-    //    bytes memory burl_3 = bytes(urlChapterVersesII);
-    //    
-    //    string memory url = new string(getLengthChapterVersesURL(burl_2));
-    //    bytes memory burl = bytes(url);
-    //        
-    //    uint i = 0;
-    //    uint k = 0;
-    //    for (i = 0; i < burl_1.length; i++) burl[k++] = burl_1[i];
-    //    for (i = 0; i < burl_2.length; i++) burl[k++] = burl_2[i];
-    //    for (i = 0; i < burl_3.length; i++) burl[k++] = burl_3[i];
-    //    
-    //    url = string(burl);
-    //    return url;
-    //}
-    
-    /**
-    * @dev This supplemental function is needed due to current Solidity stack size limitations when adding multiple numbers.
-    * This one is unique to it's corresponding constructVerseTextURL function.
-    */
-    //function getLengthVerseTextURL(
-    //    bytes _currentBookName,
-    //    bytes _currentChapterNumber,
-    //    bytes _currentVerseNumber
-    //)
-    //    internal
-    //    view
-    //    returns (uint256)
-    //{
-    //    uint256 length = 0;
-    //    length += bytes(urlVerseI).length + bytes(urlVerseII).length + bytes(urlVerseII).length + bytes(urlVerseIV).length;
-    //    length += _currentBookName.length + _currentChapterNumber.length + _currentVerseNumber.length;
-    //    return length;
-    //}
-    
-    /**
-    * @dev This supplemental function is needed due to current Solidity stack size limitations when adding multiple numbers.
-    * This one is unique to it's corresponding constructChapterVersesURL function.
-    */
-    //function getLengthChapterVersesURL(
-    //    bytes _currentBookName
-    //)
-    //    internal
-    //    view
-    //    returns (uint256)
-    //{
-    //    uint length = 0;
-    //    length += bytes(urlChapterVersesI).length + bytes(urlChapterVersesII).length;
-    //    length += _currentBookName.length;
-    //    return length;
-    //}
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    // Ownership ---------------------------------------------------------------------------------------------------------
-    /**
-    * @dev Mints a new NFT.
-    * @notice This is a private function which should be called from user-implemented external
-    * mint function. Its purpose is to show and properly initialize data structures when using this
-    * implementation.
-    * @param _to The address that will own the minted NFT.
-    * @param _tokenId of the NFT to be minted by the msg.sender.
-    */
-    //function _mint(
-    //    address _to,
-    //    uint256 _tokenId
-    //)
-    //    internal
-    //{
-    //    require(_to != address(0));
-    //    require(_tokenId != 0);
-    //    require(idToOwner[_tokenId] == address(0));
-
-    //    addNFToken(_to, _tokenId);
-
-    //    emit Transfer(address(0), _to, _tokenId);
-    //}
-
-    /**
-    * @dev Burns a NFT.
-    * @notice This is a private function which should be called from user-implemented external
-    * burn function. Its purpose is to show and properly initialize data structures when using this
-    * implementation.
-    * @param _owner Address of the NFT owner.
-    * @param _tokenId ID of the NFT to be burned.
-    */
-    //function _burn(
-    //    address _owner,
-    //    uint256 _tokenId
-    //)
-    //    validNFToken(_tokenId)
-    //    internal
-    //{
-    //    clearApproval(_owner, _tokenId);
-    //    removeNFToken(_owner, _tokenId);
-    //    emit Transfer(_owner, address(0), _tokenId);
-    //}
-    // End Ownership -----------------------------------------------------------------------------------------------------
-    
-    // Enumerable --------------------------------------------------------------------------------------------------------
-    /**
-    * @dev Mints a new NFT.
-    * @notice This is a private function which should be called from user-implemented external
-    * mint function. Its purpose is to show and properly initialize data structures when using this
-    * implementation.
-    * @param _to The address that will own the minted NFT.
-    * @param _tokenId of the NFT to be minted by the msg.sender.
-    */
-    //function _mint(
-    //    address _to,
-    //    uint256 _tokenId
-    //)
-    //    internal
-    //{
-    //    super._mint(_to, _tokenId);
-    //    tokens.push(_tokenId);
-    //}
-
-    /**
-    * @dev Burns a NFT.
-    * @notice This is a private function which should be called from user-implemented external
-    * burn function. Its purpose is to show and properly initialize data structures when using this
-    * implementation.
-    * @param _owner Address of the NFT owner.
-    * @param _tokenId ID of the NFT to be burned.
-    */
-    //function _burn(
-    //    address _owner,
-    //    uint256 _tokenId
-    //)
-    //    internal
-    //{
-    //    assert(tokens.length > 0);
-    //    super._burn(_owner, _tokenId);
-
-    //    uint256 tokenIndex = idToIndex[_tokenId];
-    //    uint256 lastTokenIndex = tokens.length.sub(1);
-    //    uint256 lastToken = tokens[lastTokenIndex];
-
-    //    tokens[tokenIndex] = lastToken;
-    //    tokens[lastTokenIndex] = 0;
-
-    //    tokens.length--;
-    //    idToIndex[_tokenId] = 0;
-    //    idToIndex[lastToken] = tokenIndex;
-    //}
-    
-    /**
-    * @dev Removes a NFT from an address.
-    * @notice Use and override this function with caution. Wrong usage can have serious consequences.
-    * @param _from Address from wich we want to remove the NFT.
-    * @param _tokenId Which NFT we want to remove.
-    */
-    //function removeNFToken(
-    //    address _from,
-    //    uint256 _tokenId
-    //)
-    //internal
-    //{
-    //    super.removeNFToken(_from, _tokenId);
-    //    assert(ownerToIds[_from].length > 0);
-
-    //    uint256 tokenToRemoveIndex = idToOwnerIndex[_tokenId];
-    //    uint256 lastTokenIndex = ownerToIds[_from].length.sub(1);
-    //    uint256 lastToken = ownerToIds[_from][lastTokenIndex];
-
-    //    ownerToIds[_from][tokenToRemoveIndex] = lastToken;
-    //    ownerToIds[_from][lastTokenIndex] = 0;
-
-    //    ownerToIds[_from].length--;
-    //    idToOwnerIndex[_tokenId] = 0;
-    //    idToOwnerIndex[lastToken] = tokenToRemoveIndex;
-    //}
-
-    /**
-    * @dev Assignes a new NFT to an address.
-    * @notice Use and override this function with caution. Wrong usage can have serious consequences.
-    * @param _to Address to wich we want to add the NFT.
-    * @param _tokenId Which NFT we want to add.
-    */
-    //function addNFToken(
-    //    address _to,
-    //    uint256 _tokenId
-    //)
-    //    internal
-    //{
-    //    super.addNFToken(_to, _tokenId);
-
-    //    uint256 length = ownerToIds[_to].length;
-    //    ownerToIds[_to].push(_tokenId);
-    //    idToOwnerIndex[_tokenId] = length;
-    //}
-    // End Enumerable ----------------------------------------------------------------------------------------------------
-    
-    // Metadata ----------------------------------------------------------------------------------------------------------
-    /**
-    * @dev Burns a NFT.
-    * @notice This is a internal function which should be called from user-implemented external
-    * burn function. Its purpose is to show and properly initialize data structures when using this
-    * implementation.
-    * @param _owner Address of the NFT owner.
-    * @param _tokenId ID of the NFT to be burned.
-    */
-    //function _burn(
-    //    address _owner,
-    //    uint256 _tokenId
-    //)
-    //    internal
-    //{
-    //    super._burn(_owner, _tokenId);
-
-    //    if (bytes(idToUri[_tokenId]).length != 0) {
-    //        delete idToUri[_tokenId];
-    //    }
-    //}
-    // End Metadata ------------------------------------------------------------------------------------------------------
 }

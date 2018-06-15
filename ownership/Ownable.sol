@@ -1,13 +1,26 @@
+/**
+ * @file Ownable.sol
+ * @author John DeBord <i@johndebord.tk>
+ * @date 2018
+ * 
+ * Utilizing 0xcert's ERC721 token implementation
+ * https://0xcert.org/
+ */
+
 pragma solidity ^0.4.20;
 
 /**
+ * @title Ownable
  * @dev The contract has an owner address, and provides basic authorization control whitch
  * simplifies the implementation of user permissions. This contract is based on the source code
  * at https://goo.gl/n2ZGVt.
  */
 contract Ownable {
+    
+    /**
+    * @dev The owner of the contact.
+    */
     address public owner;
-    //address public thisContract;
 
     /**
     * @dev An event which is triggered when the owner is changed.
@@ -26,7 +39,6 @@ contract Ownable {
         public
     {
         owner = msg.sender;
-        //thisContract = address(this);
     }
 
     /**
@@ -37,14 +49,6 @@ contract Ownable {
         _;
     }
     
-    /**
-    * @dev Throws if called by any account other than the owner or the contract.
-    */
-    //modifier onlyOwnerOrContract() {
-    //    require(msg.sender == owner || msg.sender == thisContract);
-    //    _;
-    //}
-
     /**
     * @dev Allows the current owner to transfer control of the contract to a newOwner.
     * @param _newOwner The address to transfer ownership to.
