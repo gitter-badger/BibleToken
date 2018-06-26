@@ -42,6 +42,15 @@ contract BibleTokenMinting is
     mapping (bytes32 => address) queryToSender;
     
     /**
+    * @dev These variables are for the gas limites of all the Oraclize queries in this contract.
+    */
+    uint256 mintVerseGasLimit = 1000000;
+    uint256 updateBookNameGasLimit = 100000;
+    uint256 updateNumberOfChaptersGasLimit = 100000;
+    uint256 updateChapterVersesIGasLimit = 100000;
+    uint256 updateChapterVersesIIGasLimit = 100000;
+    
+    /**
     * @dev This variable is used to sustain the contract's halting functionality in between tokens
     * getting minted. When an Oraclize query is sent out this counter is incremented.
     * When the `__callback` completes its duty the counter will get decremented.
@@ -148,6 +157,22 @@ contract BibleTokenMinting is
     }
     
     /**
+    * @dev This function is needed just in case any unforeseen Oraclize complications are run into.
+    * Only the owner of the contract can access this function. The usage is after the contract state
+    * variables have been audited by the owner, the owner will then unhalt the contract and also reset.
+    * the current query count. This function should never be used, but it is still a must to have.
+    */
+    function ownerUnhalt()
+        onlyOwner
+        whenHalted
+        external
+    {
+        halted = false;
+        queryCount = 0;
+        Unhalt();
+    }
+    
+    /**
     * @dev This function controls when the contract is to be unhalted. `queryCount` initially starts
     * off at 0. But is incremented each time there is an Oraclize query.
     * Everytime Oraclize completes a `__callback` `queryCount` gets decremented by 1.
@@ -210,10 +235,10 @@ contract BibleTokenMinting is
     * any given verse in the Bible; the longest being Esther 8:9, at a total character count of 528.
     */
     function mint()
-        payable
-        external
         whenNotHalted
         booksIncomplete
+        payable
+        external
     {
         require(msg.value == 0.03 ether);
         
@@ -431,22 +456,22 @@ contract BibleTokenMinting is
     {
         require(this.balance > oraclize_getPrice("IPFS"));
         
-        string memory url = "xml(QmR6NhVGtJvDRTMFYkBga6FaBcgUqZLHrDZb7fCqJzL85v).xpath(/Bible/Book[@id='";
+        string memory query = url;
         
-        url = strConcat(
-            url,
+        query = strConcat(
+            query,
             uint2str(booksCompleted + 1),
             "']/Chapter[@id='",
             uint2str(currentChapterNumber),
             "']/Verse[@id='"
         );
-        url = strConcat(
-            url,
+        query = strConcat(
+            query,
             uint2str(currentVerseNumber),
             "']/text())"
         );
         
-        bytes32 id = oraclize_query("IPFS", url, 920000);
+        bytes32 id = oraclize_query("IPFS", query, mintVerseGasLimit);
         ++queryCount;
         queryToType[id] = QueryType.GET_VERSE;
         queryToSender[id] = msg.sender;
@@ -464,15 +489,15 @@ contract BibleTokenMinting is
     {
         require(this.balance > oraclize_getPrice("IPFS"));
         
-        string memory url = "xml(QmR6NhVGtJvDRTMFYkBga6FaBcgUqZLHrDZb7fCqJzL85v).xpath(/Bible/Book[@id='";
+        string memory query = url;
         
-        url = strConcat(
-            url,
+        query = strConcat(
+            query,
             uint2str(booksCompleted + 2),
             "']/bookName/text())"
         );
         
-        bytes32 id = oraclize_query("IPFS", url, 60000);
+        bytes32 id = oraclize_query("IPFS", query, updateBookNameGasLimit);
         ++queryCount;
         queryToType[id] = QueryType.GET_BOOK_NAME;
         
@@ -489,15 +514,15 @@ contract BibleTokenMinting is
     {
         require(this.balance > oraclize_getPrice("IPFS"));
         
-        string memory url = "xml(QmR6NhVGtJvDRTMFYkBga6FaBcgUqZLHrDZb7fCqJzL85v).xpath(/Bible/Book[@id='";
+        string memory query = url;
         
-        url = strConcat(
-            url,
+        query = strConcat(
+            query,
             uint2str(booksCompleted + 2),
             "']/numberOfChapters/text())"
         );
         
-        bytes32 id = oraclize_query("IPFS", url, 60000);
+        bytes32 id = oraclize_query("IPFS", query, updateNumberOfChaptersGasLimit);
         ++queryCount;
         queryToType[id] = QueryType.GET_NUMBER_OF_CHAPTERS;
         
@@ -518,17 +543,17 @@ contract BibleTokenMinting is
     {
         require(this.balance > oraclize_getPrice("IPFS"));
         
-        string memory url = "xml(QmR6NhVGtJvDRTMFYkBga6FaBcgUqZLHrDZb7fCqJzL85v).xpath(/Bible/Book[@id='";
+        string memory query = url;
         
-        url = strConcat(
-            url,
+        query = strConcat(
+            query,
             uint2str(booksCompleted + 1),
             "']/Chapter[@id='",
             uint2str(currentChapterNumber),
             "']/numberOfVerses/text())"
         );
         
-        bytes32 id = oraclize_query("IPFS", url, 60000);
+        bytes32 id = oraclize_query("IPFS", query, updateChapterVersesIGasLimit);
         ++queryCount;
         queryToType[id] = QueryType.GET_CHAPTER_VERSES;
         
@@ -549,17 +574,17 @@ contract BibleTokenMinting is
     {
         require(this.balance > oraclize_getPrice("IPFS"));
         
-        string memory url = "xml(QmR6NhVGtJvDRTMFYkBga6FaBcgUqZLHrDZb7fCqJzL85v).xpath(/Bible/Book[@id='";
+        string memory query = url;
         
-        url = strConcat(
-            url,
+        query = strConcat(
+            query,
             uint2str(booksCompleted + 2),
             "']/Chapter[@id='",
             uint2str(currentChapterNumber),
             "']/numberOfVerses/text())"
         );
         
-        bytes32 id = oraclize_query("IPFS", url, 60000);
+        bytes32 id = oraclize_query("IPFS", query, updateChapterVersesIIGasLimit);
         ++queryCount;
         queryToType[id] = QueryType.GET_CHAPTER_VERSES;
         

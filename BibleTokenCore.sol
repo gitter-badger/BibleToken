@@ -26,13 +26,137 @@ contract BibleTokenCore is
     function BibleTokenCore()
         public
     {
+        url = "xml(QmWHM6Q1jLn5TszMQVYvLaSj3bug2qSkWGey3ExDGyoYQy).xpath(/Bible/Book[@id='";
+        
         booksCompleted = 0;
         
-        currentBookName = "Esther";
-        currentNumberOfChapters = 1;
-        currentChapterVersesNumber = 1;
+        currentBookName = "Genesis";
+        currentNumberOfChapters = 50;
+        currentChapterVersesNumber = 31;
         currentChapterNumber = 1;
         currentVerseNumber = 1;
+    }
+    
+    /**
+     * @dev This function is for setting the gas price for Oraclize queries.
+     * Needed for if the gas price of using the Oraclize service fluctuates.
+     * Note that only the owner can call this function and the argument passed
+     * must be in Wei.
+     * @param _gasPrice The amount if Wei to set the Oraclize gas price.
+     */
+    function setOraclizeGasPrice(
+        uint256 _gasPrice
+    )
+        onlyOwner
+        whenPaused
+        external
+    {
+        oraclize_setCustomGasPrice(_gasPrice);
+    }
+    
+    /**
+     * @dev This function is for setting the gas limits of the different Oraclize
+     * queries, just in case the queries need tweaking in the future.
+     * Note that only the owner can call this function and the argument passed
+     * must be in Wei.
+     * @param _mintVerseGasLimit For the mint verse query.
+     * @param _updateBookNameGasLimit For the book name query.
+     * @param _updateNumberOfChaptersGasLimit For the number of chapters query.
+     * @param _updateChapterVersesIGasLimit For the chapter verses I query.
+     * @param _updateChapterVersesIIGasLimit For the chapter verses II query.
+     */
+    function setOraclizeGasLimits(
+        uint256 _mintVerseGasLimit,
+        uint256 _updateBookNameGasLimit,
+        uint256 _updateNumberOfChaptersGasLimit,
+        uint256 _updateChapterVersesIGasLimit,
+        uint256 _updateChapterVersesIIGasLimit
+    )
+        onlyOwner
+        whenPaused
+        external
+    {
+        mintVerseGasLimit = _mintVerseGasLimit;
+        updateBookNameGasLimit = _updateBookNameGasLimit;
+        updateNumberOfChaptersGasLimit = _updateNumberOfChaptersGasLimit;
+        updateChapterVersesIGasLimit = _updateChapterVersesIGasLimit;
+        updateChapterVersesIIGasLimit = _updateChapterVersesIIGasLimit;
+    }
+    
+    /**
+     * @dev This function sets the IPFS URL that is used by this contract.
+     * Only the owner of the contract can change it. It is needed just in case
+     * something happens where the BibleData on the IPFS is compromised. Note
+     * that the new url must be specified in the format shown in the constructor.
+     * This function should never be used, but it is still a must to have it.
+     * @param _url The url state variable that may need to be audited.
+     */
+    function setURL(
+        string _url
+    )
+        onlyOwner
+        whenPaused
+        external
+    {
+        url = _url;
+    }
+    
+    /**
+     * @dev This function sets all state variables to a certain value. This function is also needed just in case
+     * there is a problem with the Oraclize API and somehow the state variables need to be reset in a way. Again,
+     * this function should never be used, but is still a must to have.
+     * @param _booksCompleted The booksCompleted state variable that may need to be audited.
+     * @param _currentBookName The currentBookName state variable that may need to be audited.
+     * @param _currentNumberOfChapters The currentNumberOfChapters state variable that may need to be audited.
+     * @param _currentChapterVersesNumber The currentChapterVersesNumber state variable that may need to be audited.
+     * @param _currentChapterNumber The currentChapterNumber state variable that may need to be audited.
+     * @param _currentVerseNumber The currentVerseNumber state variable that may need to be audited.
+     */
+    function setStateVariables(
+        uint8 _booksCompleted,
+        string _currentBookName,
+        uint8 _currentNumberOfChapters,
+        uint8 _currentChapterVersesNumber,
+        uint8 _currentChapterNumber,
+        uint8 _currentVerseNumber
+    )
+        onlyOwner
+        whenPaused
+        external
+    {
+        booksCompleted = _booksCompleted;
+        currentBookName = _currentBookName;
+        currentNumberOfChapters = _currentNumberOfChapters;
+        currentChapterVersesNumber = _currentChapterVersesNumber;
+        currentChapterNumber = _currentChapterNumber;
+        currentVerseNumber = _currentVerseNumber;
+    }
+    
+    /**
+     * @dev This function makes a correction to a verse just in case any data in a
+     * verse gets corrupted somehow. This should NEVER happen. But alas, again, this
+     * function should never be used, but is still a must to have.
+     * @param _tokenIndex The index of the token that is to be audited.
+     * @param _bookName The name of the book that may need to be audited.
+     * @param _chapterNumber The chapter number that may need to be audited.
+     * @param _verseNumber The verse number that may need to be audited.
+     * @param _verseText The text of the verse that may need to be audited.
+     */
+    function auditVerse(
+        uint256 _tokenIndex,
+        string _bookName,
+        uint8 _chapterNumber,
+        uint8 _verseNumber,
+        string _verseText
+    )
+        onlyOwner
+        whenPaused
+        external
+    {
+        tokens[_tokenIndex].bookName = _bookName;
+        tokens[_tokenIndex].chapterNumber = _chapterNumber;
+        tokens[_tokenIndex].verseNumber = _verseNumber;
+        tokens[_tokenIndex].verseText = _verseText;
     }
     
     /**
@@ -87,9 +211,9 @@ contract BibleTokenCore is
      * Oraclize queries.
      */
     function checkBalance()
+        onlyOwner
         external
         view
-        onlyOwner
         returns (uint256)
     {
         uint256 balance = this.balance;
@@ -101,8 +225,8 @@ contract BibleTokenCore is
      * owner of the contract.
      */
     function withdrawBalance()
-        external
         onlyOwner
+        external
     {
         uint256 balance = this.balance;
         require(balance > 0);

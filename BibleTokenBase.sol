@@ -44,6 +44,11 @@ contract BibleTokenBase {
     /*** STORAGE ***/
     
     /**
+    * @dev This variable is the URL of the BibleData.xml file that is stored on the IPFS.
+    */
+    string url;
+    
+    /**
     * @dev This variable keeps track of how many books have been completed.
     */
     uint8  public booksCompleted;
