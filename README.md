@@ -47,3 +47,24 @@ Any help auditing the code for security holes or organizing the logic of the cod
 This is going to have to be a community effort.
 
 Let's get the Bible on the blockchain!
+
+How To Test (Ubuntu 16.04LTS)
+---------------
+Dependencies     | Links
+---------------- | --------------------
+Ganachi CLI      | [https://github.com/trufflesuite/ganache-cli](https://github.com/trufflesuite/ganache-cli)
+Ethereum Bridge  | [https://github.com/oraclize/ethereum-bridge](https://github.com/oraclize/ethereum-bridge)
+IPFS             | [https://github.com/ipfs/ipfs](https://github.com/ipfs/ipfs)
+
+A user-friendly way to try out BibleToken is to use the [Remix Solidity IDE](https://remix.ethereum.org/).
+- Start up Ganachi CLI
+- Start up Ethereum Bridge
+- Start up your IPFS daemon
+- Pin the `Bible.xml` file to the IPFS
+- Get all `.sol` files onto the Remix IDE
+- In the Remix IDE under the "Settings" tab select from the "Select new compiler version" dropdown menu `0.4.20+commit.3155dd80`
+- Still under "Settings" under the "General Settings" menu enable, "Enable Optimization"
+- Navigate to the "Run" tab and select from the "Environment" dropdown menu select, "Web3 Provider" and fill in the appropriate port number
+- Compile "BibleTokenCore.sol"
+- Deploy "BibleTokenCore"
+- Finally test it out!
