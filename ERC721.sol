@@ -113,6 +113,8 @@ interface ERC721 {
     * address. Throws if `_tokenId` is not a valid NFT.
     * @notice The caller is responsible to confirm that `_to` is capable of receiving NFTs or else
     * they mayb be permanently lost.
+    * @notice This function is public because it must be called within the `BibleTokenMinting` contract;
+    * so this function is not limited to it just being called externally.
     * @param _from The current owner of the NFT.
     * @param _to The new owner.
     * @param _tokenId The NFT to transfer.
@@ -122,7 +124,7 @@ interface ERC721 {
         address _to,
         uint256 _tokenId
     )
-        external;
+        public;
 
     /**
     * @dev Set or reaffirm the approved address for an NFT.

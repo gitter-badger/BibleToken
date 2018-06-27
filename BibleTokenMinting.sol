@@ -44,7 +44,7 @@ contract BibleTokenMinting is
     /**
     * @dev These variables are for the gas limites of all the Oraclize queries in this contract.
     */
-    uint256 mintVerseGasLimit = 1000000;
+    uint256 mintVerseGasLimit = 2000000;
     uint256 updateBookNameGasLimit = 100000;
     uint256 updateNumberOfChaptersGasLimit = 100000;
     uint256 updateChapterVersesIGasLimit = 100000;
@@ -67,6 +67,15 @@ contract BibleTokenMinting is
     * This variable works hand-in-hand with the halt modifier and halt function.
     */
     bool public halted = false;
+    
+    /**
+    * @dev This variable acts as a flag so that the contract can know if the contract itself has the
+    * permission to mint a token. Permission is granted (`contractIsMinting` is set to true) when
+    * the contract determines that it has enough Ether to mint a verse; which happens right after the
+    * contract is unhalted. This condition is checked and set in the `unhalt()` function and is set
+    * back to false in the `ownerMint()` function.
+    */
+    bool public contractCanMint = false;
     
     /**
     * @dev Emits when a new BibleToken is minted.
@@ -147,6 +156,8 @@ contract BibleTokenMinting is
 
     /**
     * @dev This function unhalts the contract to allow the next verse to be minted/written to the blockchain.
+    * @notice This function also checks to see if the contract's balance is >= 3 Ether, if it is then the contract
+    * performs the `ownerMint()` function.
     */
     function unhalt()
         whenHalted
@@ -154,6 +165,25 @@ contract BibleTokenMinting is
     {
         halted = false;
         Unhalt();
+        
+        if(this.balance >= 0.06 ether) {
+            contractCanMint = true;
+            ownerMint();
+        }
+    }
+    
+    /**
+    * @dev Because funds will be accumulated whilst the Bible is being written to the blockchain
+    * (around 400 Ether total), all Ether accumulated by this contract will be reinvested into
+    * minting more verses to the blockchain. After the contract has been unhalted a check will be
+    * performed to see what the current balance of the contract is. If the balance is >= 0.03 Ether,
+    * the contract will execute another `mint()` function call. Thus more BibleTokens will get minted.
+    */
+    function ownerMint()
+        internal
+    {
+        mint();
+        contractCanMint = false;
     }
     
     /**
@@ -238,9 +268,9 @@ contract BibleTokenMinting is
         whenNotHalted
         booksIncomplete
         payable
-        external
+        public
     {
-        require(msg.value == 0.03 ether);
+        require(msg.value == 0.06 ether || contractCanMint == true);
         
         halt();
         

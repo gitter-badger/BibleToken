@@ -232,6 +232,8 @@ contract BibleTokenOwnership is
     * address. Throws if `_tokenIndex` is not a valid BibleToken.
     * @notice The caller is responsible to confirm that `_to` is capable of receiving BibleTokens or else
     * they maybe be permanently lost.
+    * @notice This function is public because it must be called within the `BibleTokenMinting` contract;
+    * so this function is not limited to it just being called externally.
     * @param _from The current owner of the BibleToken.
     * @param _to The new owner.
     * @param _tokenIndex Index of the BibleToken to transfer.
@@ -241,7 +243,7 @@ contract BibleTokenOwnership is
         address _to,
         uint256 _tokenIndex
     )
-        external
+        public
         canTransfer(_tokenIndex)
         validNFToken(_tokenIndex)
     {

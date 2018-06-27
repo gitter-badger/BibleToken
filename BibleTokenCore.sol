@@ -3,6 +3,10 @@
  * @author John DeBord <i@johndebord.tk>
  * @date 2018
  */
+ 
+ // TODO
+ // [ ] Make function to transfer contract-owned tokens
+ // [ ] Calculate maximum gas cost possible for an Oraclize query
 
 pragma solidity ^0.4.20;
 
