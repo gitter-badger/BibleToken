@@ -62,9 +62,9 @@ A user-friendly way to try out BibleToken is to use the [Remix Solidity IDE](htt
 - Start up your IPFS daemon
 - Pin the `Bible.xml` file to the IPFS
 - Get all `.sol` files onto the Remix IDE
-- In the Remix IDE under the "Settings" tab, select from the "Select new compiler version" dropdown menu, `0.4.20+commit.3155dd80`
+- In the Remix IDE under the "Settings" tab, select from the "Select new compiler version" dropdown menu, "0.4.20+commit.3155dd80"
 - Still under "Settings" tab, under the "General Settings" menu enable, "Enable Optimization"
 - Navigate to the "Run" tab and from the "Environment" dropdown menu select, "Web3 Provider" and fill in the appropriate port number
-- Compile "BibleTokenCore.sol"
-- Deploy "BibleTokenCore"
+- Compile `BibleTokenCore.sol`
+- Deploy the "BibleTokenCore" contract
 - Finally test it out!
