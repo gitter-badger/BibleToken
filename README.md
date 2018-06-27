@@ -3,6 +3,10 @@ BibleToken - Getting The Bible on The Blockchain
 
 < website-goes-here >
 
+Contract Structure
+---------------
+<img src="https://imgur.com/1cfDk67.png">
+
 What is BibleToken?
 -------------------
 The BibleToken project aims to get The King James Bible onto the Ethereum blockchain.
