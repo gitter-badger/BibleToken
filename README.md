@@ -63,7 +63,7 @@ A user-friendly way to try out BibleToken is to use the [Remix Solidity IDE](htt
 - Start up Ethereum Bridge
 - Start up your IPFS daemon
 - Pin the `Bible.xml` file to the IPFS
-- Get all `.sol` files onto the Remix IDE
+- Get all `.sol` files onto the Remix IDE (note that the paths of `SafeMath.sol`, `Ownable.sol`, `Pausable.sol`, and `AddressUtils.sol` will have to be changed when imported in their respective files if opting to use the Remix IDE to test BibleToken)
 - In the Remix IDE under the "Settings" tab, select from the "Select new compiler version" dropdown menu, "0.4.20+commit.3155dd80"
 - Still under "Settings" tab, under the "General Settings" menu enable, "Enable Optimization"
 - Navigate to the "Run" tab and from the "Environment" dropdown menu select, "Web3 Provider" and fill in the appropriate port number
