@@ -40,6 +40,8 @@ This way, it will also build anticipation for people watching to see when one of
 
 Once the token is minted, you (and anyone else in the world) will be able to view that verse for no gas cost.
 
+This contract relies heavily on the [Oraclize API](http://www.oraclize.it/). And due to the nature of Oraclize, each query must have a pre-calculated gas limit, thus the contract has been programmed so that the gas used will never exceed the limit for writing the longest verse in the Bible to the blockchain (which is Esther 8:9). Therefore the cost of minting one verse will be approximately 0.03 Ether, which as of 06/27/2018 costs approximately ~$12.98 USD.
+
 How Can I Help?
 ---------------
 Any help auditing the code for security holes or organizing the logic of the code as well as a number of many other things would be greatly appreciated.
