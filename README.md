@@ -69,4 +69,4 @@ A user-friendly way to try out BibleToken is to use the [Remix Solidity IDE](htt
 - Navigate to the "Run" tab and from the "Environment" dropdown menu, select "Web3 Provider" and fill in the appropriate port number
 - Compile `BibleTokenCore.sol`
 - Deploy the "BibleTokenCore" contract
-- Finally test it out (note that to mint a token it is required that you send 0.03 Ether along with the transaction)!
+- Finally test it out. Note that to mint a token it is required that you send 0.06 Ether along with the transaction; this cost will eventually be lowered once all gas cost calculations have been finalized.
