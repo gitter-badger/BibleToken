@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<head>
+  <title>BibleToken</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="./app.js"></script>
+</head>
+
+<body>
+  <h2>BibleToken Bare-Bones Prototype Site For Variable Checking And Testing</h2>
+  <b>Your Account:</b>
+  <br>
+  <textarea rows="1" cols="100" id="accountAddress" readonly></textarea>
+  <br>
+  <div class="divTable blueTable">
+    <div class="divTableHeading">
+      <div class="divTableRow">
+	<div class="divTableHead"><b>BibleToken State Variable</b></div>
+	<div class="divTableHead"><b>BibleToken State Variable Value</b></div>
+      </div>
+    </div>
+    <div class="divTableBody">
+      <div class="divTableRow">
+	<div class="divTableCell">contractBalance</div>
+	<div class="divTableCell" id="contractBalance">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">halted</div>
+	<div class="divTableCell" id="halted">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">totalSupply</div>
+	<div class="divTableCell" id="totalSupply">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">currentBookName</div>
+	<div class="divTableCell" id="currentBookName">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">currentChapterNumber</div>
+	<div class="divTableCell" id="currentChapterNumber">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">currentVerseNumber</div>
+	<div class="divTableCell" id="currentVerseNumber">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">currentNumberOfChapters</div>
+	<div class="divTableCell" id="currentNumberOfChapters">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">currentChapterVersesNumber</div>
+	<div class="divTableCell" id="currentChapterVersesNumber">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">booksCompleted</div>
+	<div class="divTableCell" id="booksCompleted">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">price</div>
+	<div class="divTableCell" id="price">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">mintVerseGasLimit</div>
+	<div class="divTableCell" id="mintVerseGasLimit">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">updateBookNameGasLimit</div>
+	<div class="divTableCell" id="updateBookNameGasLimit">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">updateNumberOfChaptersGasLimit</div>
+	<div class="divTableCell" id="updateNumberOfChaptersGasLimit">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">updateChapterVersesIGasLimit</div>
+	<div class="divTableCell" id="updateChapterVersesIGasLimit">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">updateChapterVersesIIGasLimit</div>
+	<div class="divTableCell" id="updateChapterVersesIIGasLimit">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">owner</div>
+	<div class="divTableCell" id="owner">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">contractCanMint</div>
+	<div class="divTableCell" id="contractCanMint">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">queryCount</div>
+	<div class="divTableCell" id="queryCount">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">paused</div>
+	<div class="divTableCell" id="paused">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">name</div>
+	<div class="divTableCell" id="name">-</div>
+      </div>
+      <div class="divTableRow">
+	<div class="divTableCell">symbol</div>
+	<div class="divTableCell" id="symbol">-</div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <b>Retrieve Minted Verse</b>
+  <button type="button" onclick="App.retrieveVerse()">Retrieve Verse</button>
+  <input id="bookName"      value="Genesis">
+  <input id="chapterNumber" value="1">
+  <input id="verseNumber"   value="1">
+  <br>
+  <br>
+  <textarea rows="5" cols="100" id="verse" readonly></textarea>
+  <br>
+  <br>
+  <button type="button" onclick="App.mint()">Mint Next Verse</button>
+</body>
+</html>

@@ -1,0 +1,352 @@
+{
+  "contractName": "ERC721Metadata",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "name": "_name",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "name": "_symbol",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "/**\n * @file ERC721Metadata.sol\n * @author John DeBord <i@johndebord.tk>\n * @date 2018\n * \n * Utilizing 0xcert's ERC721 token implementation\n * https://0xcert.org/\n */\n\npragma solidity ^0.4.20;\n\n/**\n * @title ERC721Metadata\n * @dev Optional metadata extension for ERC-721 non-fungible token standard.\n * See https://goo.gl/pc9yoS.\n */\ninterface ERC721Metadata {\n\n    /**\n    * @dev Returns a descriptive name for a collection of NFTs in this contract.\n    */\n    function name()\n        external\n        view\n        returns (string _name);\n\n    /**\n    * @dev Returns a abbreviated name for a collection of NFTs in this contract.\n    */\n    function symbol()\n        external\n        view\n        returns (string _symbol);\n\n}\n",
+  "sourcePath": "/home/i/BibleToken/contracts/ERC721Metadata.sol",
+  "ast": {
+    "absolutePath": "/home/i/BibleToken/contracts/ERC721Metadata.sol",
+    "exportedSymbols": {
+      "ERC721Metadata": [
+        2111
+      ]
+    },
+    "id": 2112,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2100,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".20"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "169:24:9"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title ERC721Metadata\n@dev Optional metadata extension for ERC-721 non-fungible token standard.\nSee https://goo.gl/pc9yoS.",
+        "fullyImplemented": false,
+        "id": 2111,
+        "linearizedBaseContracts": [
+          2111
+        ],
+        "name": "ERC721Metadata",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Returns a descriptive name for a collection of NFTs in this contract.",
+            "id": 2105,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "name",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2101,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "476:2:9"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2104,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2103,
+                  "name": "_name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2105,
+                  "src": "526:12:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2102,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "526:6:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "525:14:9"
+            },
+            "scope": 2111,
+            "src": "463:77:9",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Returns a abbreviated name for a collection of NFTs in this contract.",
+            "id": 2110,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "symbol",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2106,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "657:2:9"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2109,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2108,
+                  "name": "_symbol",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2110,
+                  "src": "707:14:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2107,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "707:6:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "706:16:9"
+            },
+            "scope": 2111,
+            "src": "642:81:9",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2112,
+        "src": "335:391:9"
+      }
+    ],
+    "src": "169:558:9"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/i/BibleToken/contracts/ERC721Metadata.sol",
+    "exportedSymbols": {
+      "ERC721Metadata": [
+        2111
+      ]
+    },
+    "id": 2112,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2100,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".20"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "169:24:9"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title ERC721Metadata\n@dev Optional metadata extension for ERC-721 non-fungible token standard.\nSee https://goo.gl/pc9yoS.",
+        "fullyImplemented": false,
+        "id": 2111,
+        "linearizedBaseContracts": [
+          2111
+        ],
+        "name": "ERC721Metadata",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Returns a descriptive name for a collection of NFTs in this contract.",
+            "id": 2105,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "name",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2101,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "476:2:9"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2104,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2103,
+                  "name": "_name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2105,
+                  "src": "526:12:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2102,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "526:6:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "525:14:9"
+            },
+            "scope": 2111,
+            "src": "463:77:9",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Returns a abbreviated name for a collection of NFTs in this contract.",
+            "id": 2110,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "symbol",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2106,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "657:2:9"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2109,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2108,
+                  "name": "_symbol",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2110,
+                  "src": "707:14:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2107,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "707:6:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "706:16:9"
+            },
+            "scope": 2111,
+            "src": "642:81:9",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2112,
+        "src": "335:391:9"
+      }
+    ],
+    "src": "169:558:9"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.0",
+  "updatedAt": "2018-07-07T04:00:26.284Z"
+}

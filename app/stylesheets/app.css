@@ -1,0 +1,46 @@
+div.blueTable {
+    font-family: "Lucida Console", Monaco, monospace;
+    border: 3px solid #000000;
+    background-color: #E9E9E9;
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+}
+.divTable.blueTable .divTableCell, .divTable.blueTable .divTableHead {
+    border: 1px solid #AAAAAA;
+    padding: 7px 6px;
+}
+.divTable.blueTable .divTableBody .divTableCell {
+    font-size: 13px;
+    color: #000000;
+}
+.divTable.blueTable .divTableRow:nth-child(even) {
+    background: #C4E2F5;
+}
+.blueTable .tableFootStyle {
+    font-size: 14px;
+}
+.blueTable .tableFootStyle .links {
+    text-align: right;
+}
+.blueTable .tableFootStyle .links a{
+    display: inline-block;
+    background: #1C6EA4;
+    color: #FFFFFF;
+    padding: 2px 8px;
+    border-radius: 5px;
+}
+.blueTable.outerTableFooter {
+    border-top: none;
+}
+.blueTable.outerTableFooter .tableFootStyle {
+    padding: 3px 5px; 
+}
+/* DivTable.com */
+.divTable{ display: table; }
+.divTableRow { display: table-row; }
+.divTableHeading { display: table-header-group;}
+.divTableCell, .divTableHead { display: table-cell;}
+.divTableHeading { display: table-header-group;}
+.divTableFoot { display: table-footer-group;}
+.divTableBody { display: table-row-group;}

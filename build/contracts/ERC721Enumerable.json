@@ -1,0 +1,226 @@
+{
+  "contractName": "ERC721Enumerable",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "/**\n * @file ERC721Enumerable.sol\n * @author John DeBord <i@johndebord.tk>\n * @date 2018\n * \n * Utilizing 0xcert's ERC721 token implementation\n * https://0xcert.org/\n */\n\npragma solidity ^0.4.20;\n\n/**\n * @title ERC721Enumerable\n * @dev Optional enumeration extension for ERC-721 non-fungible token standard.\n * See https://goo.gl/pc9yoS.\n */\ninterface ERC721Enumerable {\n\n    /**\n    * @dev Returns a count of valid NFTs tracked by this contract, where each one of them has an\n    * assigned and queryable owner not equal to the zero address.\n    */\n    function totalSupply()\n        external\n        view\n        returns (uint256);\n        \n}\n",
+  "sourcePath": "/home/i/BibleToken/contracts/ERC721Enumerable.sol",
+  "ast": {
+    "absolutePath": "/home/i/BibleToken/contracts/ERC721Enumerable.sol",
+    "exportedSymbols": {
+      "ERC721Enumerable": [
+        2098
+      ]
+    },
+    "id": 2099,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2092,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".20"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "171:24:8"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title ERC721Enumerable\n@dev Optional enumeration extension for ERC-721 non-fungible token standard.\nSee https://goo.gl/pc9yoS.",
+        "fullyImplemented": false,
+        "id": 2098,
+        "linearizedBaseContracts": [
+          2098
+        ],
+        "name": "ERC721Enumerable",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Returns a count of valid NFTs tracked by this contract, where each one of them has an\nassigned and queryable owner not equal to the zero address.",
+            "id": 2097,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "totalSupply",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2093,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "574:2:8"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2096,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2095,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2097,
+                  "src": "624:7:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2094,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "624:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "623:9:8"
+            },
+            "scope": 2098,
+            "src": "554:79:8",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2099,
+        "src": "342:302:8"
+      }
+    ],
+    "src": "171:474:8"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/i/BibleToken/contracts/ERC721Enumerable.sol",
+    "exportedSymbols": {
+      "ERC721Enumerable": [
+        2098
+      ]
+    },
+    "id": 2099,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2092,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".20"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "171:24:8"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title ERC721Enumerable\n@dev Optional enumeration extension for ERC-721 non-fungible token standard.\nSee https://goo.gl/pc9yoS.",
+        "fullyImplemented": false,
+        "id": 2098,
+        "linearizedBaseContracts": [
+          2098
+        ],
+        "name": "ERC721Enumerable",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Returns a count of valid NFTs tracked by this contract, where each one of them has an\nassigned and queryable owner not equal to the zero address.",
+            "id": 2097,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "totalSupply",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2093,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "574:2:8"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2096,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2095,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2097,
+                  "src": "624:7:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2094,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "624:7:8",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "623:9:8"
+            },
+            "scope": 2098,
+            "src": "554:79:8",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2099,
+        "src": "342:302:8"
+      }
+    ],
+    "src": "171:474:8"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.0",
+  "updatedAt": "2018-07-07T04:00:26.284Z"
+}

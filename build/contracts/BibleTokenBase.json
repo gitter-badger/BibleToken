@@ -1,0 +1,864 @@
+{
+  "contractName": "BibleTokenBase",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "currentBookName",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "booksCompleted",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "currentVerseNumber",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "currentNumberOfChapters",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "currentChapterNumber",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "currentChapterVersesNumber",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b5061027b806100206000396000f3006080604052600436106100775763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166335df3bd6811461007c5780639894eab2146101065780639911844814610131578063b15b5b8114610146578063d0c5e63a1461015b578063d523be0414610170575b600080fd5b34801561008857600080fd5b50610091610185565b6040805160208082528351818301528351919283929083019185019080838360005b838110156100cb5781810151838201526020016100b3565b50505050905090810190601f1680156100f85780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561011257600080fd5b5061011b610210565b6040805160ff9092168252519081900360200190f35b34801561013d57600080fd5b5061011b610219565b34801561015257600080fd5b5061011b610229565b34801561016757600080fd5b5061011b610232565b34801561017c57600080fd5b5061011b610241565b6002805460408051602060018416156101000260001901909316849004601f810184900484028201840190925281815292918301828280156102085780601f106101dd57610100808354040283529160200191610208565b820191906000526020600020905b8154815290600101906020018083116101eb57829003601f168201915b505050505081565b60015460ff1681565b6003546301000000900460ff1681565b60035460ff1681565b60035462010000900460ff1681565b600354610100900460ff16815600a165627a7a72305820690f425e3e638f39663376a21b3c6a6393d7defc801c565e98ae33fa46eadf850029",
+  "deployedBytecode": "0x6080604052600436106100775763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166335df3bd6811461007c5780639894eab2146101065780639911844814610131578063b15b5b8114610146578063d0c5e63a1461015b578063d523be0414610170575b600080fd5b34801561008857600080fd5b50610091610185565b6040805160208082528351818301528351919283929083019185019080838360005b838110156100cb5781810151838201526020016100b3565b50505050905090810190601f1680156100f85780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561011257600080fd5b5061011b610210565b6040805160ff9092168252519081900360200190f35b34801561013d57600080fd5b5061011b610219565b34801561015257600080fd5b5061011b610229565b34801561016757600080fd5b5061011b610232565b34801561017c57600080fd5b5061011b610241565b6002805460408051602060018416156101000260001901909316849004601f810184900484028201840190925281815292918301828280156102085780601f106101dd57610100808354040283529160200191610208565b820191906000526020600020905b8154815290600101906020018083116101eb57829003601f168201915b505050505081565b60015460ff1681565b6003546301000000900460ff1681565b60035460ff1681565b60035462010000900460ff1681565b600354610100900460ff16815600a165627a7a72305820690f425e3e638f39663376a21b3c6a6393d7defc801c565e98ae33fa46eadf850029",
+  "sourceMap": "400:1732:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;400:1732:0;;;;;;;",
+  "deployedSourceMap": "400:1732:0:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1928:29;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1928:29:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:100:-1;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;1928:29:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1674:28;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1674:28:0;;;;;;;;;;;;;;;;;;;;;;;2092:32;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2092:32:0;;;;1963:37;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1963:37:0;;;;2052:34;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2052:34:0;;;;2006:40;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2006:40:0;;;;1928:29;;;;;;;;;;;;;;-1:-1:-1;;1928:29:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;1674:28::-;;;;;;:::o;2092:32::-;;;;;;;;;:::o;1963:37::-;;;;;;:::o;2052:34::-;;;;;;;;;:::o;2006:40::-;;;;;;;;;:::o",
+  "source": "/**\n * @file BibleTokenBase.sol\n * @author John DeBord <i@johndebord.tk>\n * @date 2018\n */\n\npragma solidity ^0.4.20;\n\n/**\n * @title BibleTokenBase\n * @dev This contract is the base contract upon which the idea of BibleToken will\n * be built upon. It includes the Token data structure and the necessary state variables\n * that allow the contract to keep track of which verse is to be minted next.\n */\ncontract BibleTokenBase {\n\n    /*** DATA TYPES ***/\n\n    /**\n    * @dev The primary data structure that signifies a verse in the Bible.\n    * The structure is akin to if you were to open up your Bible to find a particular verse.\n    * First you go to the name of the book.\n    * Then you search through the book until you come to the chapter you're looking for.\n    * Next you go the verse number.\n    * And lastly you read the verse at that given number.\n    */\n    struct Token {\n        string bookName;\n        uint8  chapterNumber;\n        uint8  verseNumber;\n        string verseText;\n    }\n\n    /*** CONSTANTS ***/\n    \n    /**\n    * @dev This constant goes hand-in-hand with its counterpart variable, `bookCompleted`.\n    * They are needed so that the contract can keep track of if the entire Bible has been minted.\n    * If it has, then it will be no longer possible to mint a verse, since the entire Bible\n    * will have been written to the blockchain.\n    */\n    uint8 constant internal totalBooks = 65;\n\n    /*** STORAGE ***/\n    \n    /**\n    * @dev This variable is the URL of the BibleData.xml file that is stored on the IPFS.\n    */\n    string internal url;\n    \n    /**\n    * @dev This variable keeps track of how many books have been completed.\n    */\n    uint8  public booksCompleted;\n    \n    /**\n    * @dev These variables, including the above, `booksCompleted`, are essentially the\n    * state of the contract. They will change accordingly when after a verse has been\n    * successfully minted.\n    */\n    string public currentBookName;\n    uint8  public currentNumberOfChapters;\n    uint8  public currentChapterVersesNumber;\n    uint8  public currentChapterNumber;\n    uint8  public currentVerseNumber;\n    \n}\n",
+  "sourcePath": "/home/i/BibleToken/contracts/BibleTokenBase.sol",
+  "ast": {
+    "absolutePath": "/home/i/BibleToken/contracts/BibleTokenBase.sol",
+    "exportedSymbols": {
+      "BibleTokenBase": [
+        28
+      ]
+    },
+    "id": 29,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".20"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "92:24:0"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": "@title BibleTokenBase\n@dev This contract is the base contract upon which the idea of BibleToken will\nbe built upon. It includes the Token data structure and the necessary state variables\nthat allow the contract to keep track of which verse is to be minted next.",
+        "fullyImplemented": true,
+        "id": 28,
+        "linearizedBaseContracts": [
+          28
+        ],
+        "name": "BibleTokenBase",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "BibleTokenBase.Token",
+            "id": 10,
+            "members": [
+              {
+                "constant": false,
+                "id": 3,
+                "name": "bookName",
+                "nodeType": "VariableDeclaration",
+                "scope": 10,
+                "src": "890:15:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 2,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "890:6:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5,
+                "name": "chapterNumber",
+                "nodeType": "VariableDeclaration",
+                "scope": 10,
+                "src": "915:20:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint8",
+                  "typeString": "uint8"
+                },
+                "typeName": {
+                  "id": 4,
+                  "name": "uint8",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "915:5:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 7,
+                "name": "verseNumber",
+                "nodeType": "VariableDeclaration",
+                "scope": 10,
+                "src": "945:18:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint8",
+                  "typeString": "uint8"
+                },
+                "typeName": {
+                  "id": 6,
+                  "name": "uint8",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "945:5:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 9,
+                "name": "verseText",
+                "nodeType": "VariableDeclaration",
+                "scope": 10,
+                "src": "973:16:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 8,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "973:6:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "Token",
+            "nodeType": "StructDefinition",
+            "scope": 28,
+            "src": "867:129:0",
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 13,
+            "name": "totalBooks",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "1375:39:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 11,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "1375:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "3635",
+              "id": 12,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "1412:2:0",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_65_by_1",
+                "typeString": "int_const 65"
+              },
+              "value": "65"
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 15,
+            "name": "url",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "1553:19:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 14,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "1553:6:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 17,
+            "name": "booksCompleted",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "1674:28:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 16,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "1674:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 19,
+            "name": "currentBookName",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "1928:29:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 18,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "1928:6:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 21,
+            "name": "currentNumberOfChapters",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "1963:37:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 20,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "1963:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 23,
+            "name": "currentChapterVersesNumber",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "2006:40:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 22,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "2006:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 25,
+            "name": "currentChapterNumber",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "2052:34:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 24,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "2052:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 27,
+            "name": "currentVerseNumber",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "2092:32:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 26,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "2092:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 29,
+        "src": "400:1732:0"
+      }
+    ],
+    "src": "92:2041:0"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/i/BibleToken/contracts/BibleTokenBase.sol",
+    "exportedSymbols": {
+      "BibleTokenBase": [
+        28
+      ]
+    },
+    "id": 29,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".20"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "92:24:0"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": "@title BibleTokenBase\n@dev This contract is the base contract upon which the idea of BibleToken will\nbe built upon. It includes the Token data structure and the necessary state variables\nthat allow the contract to keep track of which verse is to be minted next.",
+        "fullyImplemented": true,
+        "id": 28,
+        "linearizedBaseContracts": [
+          28
+        ],
+        "name": "BibleTokenBase",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "BibleTokenBase.Token",
+            "id": 10,
+            "members": [
+              {
+                "constant": false,
+                "id": 3,
+                "name": "bookName",
+                "nodeType": "VariableDeclaration",
+                "scope": 10,
+                "src": "890:15:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 2,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "890:6:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5,
+                "name": "chapterNumber",
+                "nodeType": "VariableDeclaration",
+                "scope": 10,
+                "src": "915:20:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint8",
+                  "typeString": "uint8"
+                },
+                "typeName": {
+                  "id": 4,
+                  "name": "uint8",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "915:5:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 7,
+                "name": "verseNumber",
+                "nodeType": "VariableDeclaration",
+                "scope": 10,
+                "src": "945:18:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint8",
+                  "typeString": "uint8"
+                },
+                "typeName": {
+                  "id": 6,
+                  "name": "uint8",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "945:5:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 9,
+                "name": "verseText",
+                "nodeType": "VariableDeclaration",
+                "scope": 10,
+                "src": "973:16:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 8,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "973:6:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "Token",
+            "nodeType": "StructDefinition",
+            "scope": 28,
+            "src": "867:129:0",
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 13,
+            "name": "totalBooks",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "1375:39:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 11,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "1375:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "3635",
+              "id": 12,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "1412:2:0",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_65_by_1",
+                "typeString": "int_const 65"
+              },
+              "value": "65"
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 15,
+            "name": "url",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "1553:19:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 14,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "1553:6:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 17,
+            "name": "booksCompleted",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "1674:28:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 16,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "1674:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 19,
+            "name": "currentBookName",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "1928:29:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 18,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "1928:6:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 21,
+            "name": "currentNumberOfChapters",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "1963:37:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 20,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "1963:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 23,
+            "name": "currentChapterVersesNumber",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "2006:40:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 22,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "2006:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 25,
+            "name": "currentChapterNumber",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "2052:34:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 24,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "2052:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 27,
+            "name": "currentVerseNumber",
+            "nodeType": "VariableDeclaration",
+            "scope": 28,
+            "src": "2092:32:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint8",
+              "typeString": "uint8"
+            },
+            "typeName": {
+              "id": 26,
+              "name": "uint8",
+              "nodeType": "ElementaryTypeName",
+              "src": "2092:5:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint8",
+                "typeString": "uint8"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 29,
+        "src": "400:1732:0"
+      }
+    ],
+    "src": "92:2041:0"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.0",
+  "updatedAt": "2018-07-07T04:00:26.277Z"
+}
